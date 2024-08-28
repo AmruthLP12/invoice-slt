@@ -78,7 +78,7 @@ const InvoiceTable: React.FC = () => {
       {/* Date Pickers */}
       <div className="mb-4 flex space-x-4">
         <div>
-          <label className="block mb-1">Today's Date:</label>
+          <label className="block mb-1">Today&apos;s Date:</label>
           <DatePicker date={today} onDateChange={() => {}} />{" "}
           {/* Disabled Date Picker */}
         </div>
