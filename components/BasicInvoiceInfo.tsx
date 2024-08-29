@@ -37,15 +37,15 @@ const BasicInvoiceInfo: React.FC<BasicInvoiceInfoProps> = ({ invoices }) => {
           <TableRow key={index} className="border border-gray-200">
             <TableCell className="p-2">
               {/* Wrap card number with a Link */}
-              <Link href={`/invoices/${invoice.cardNumber}`}>
+              <Link href={`/invoices/₹{invoice.cardNumber}`}>
                 <p className="text-blue-500 hover:underline">{invoice.cardNumber}</p>
               </Link>
             </TableCell>
             <TableCell className="p-2">{invoice.today.toLocaleDateString()}</TableCell>
             <TableCell className="p-2">{invoice.selectedDate.toLocaleDateString()}</TableCell>
-            <TableCell className="p-2">${invoice.totalAmount}</TableCell>
-            <TableCell className="p-2">${invoice.advance}</TableCell>
-            <TableCell className="p-2">${invoice.remainingAmount}</TableCell>
+            <TableCell className="p-2">₹{invoice.totalAmount}</TableCell>
+            <TableCell className="p-2">₹{invoice.advance}</TableCell>
+            <TableCell className="p-2">₹{invoice.remainingAmount}</TableCell>
           </TableRow>
         ))}
       </TableBody>

@@ -40,7 +40,7 @@ const InvoiceDetails: React.FC = () => {
     const fetchInvoiceDetails = async () => {
       try {
         if (!cardNumber) return;
-        const response = await axios.get(`/api?cardNumber=${cardNumber}`);
+        const response = await axios.get(`/api?cardNumber=₹{cardNumber}`);
         setInvoice(response.data);
         setIsLoading(false);
       } catch (error) {
@@ -68,6 +68,9 @@ const InvoiceDetails: React.FC = () => {
     );
   }
 
+  const grandTotal = invoice.rows.reduce((acc, row) => acc + row.total, 0);
+  const remainingAmount = grandTotal - invoice.advance;
+
   return (
     <>
       <ToastContainer theme="light" position="bottom-right" />
@@ -89,11 +92,17 @@ const InvoiceDetails: React.FC = () => {
               {new Date(invoice.selectedDate).toLocaleDateString()}
             </p>
             <p className="text-lg font-semibold">
-              <strong>Advance:</strong> ${invoice.advance.toFixed(2)}
+              <strong>Advance:</strong> ₹{invoice.advance.toFixed(2)}
             </p>
             <p className="text-lg font-semibold">
               <strong>Date Created:</strong>{" "}
               {new Date(invoice.today).toLocaleDateString()}
+            </p>
+            <p className="text-lg font-semibold">
+              <strong>Total Amount:</strong> {grandTotal}
+            </p>
+            <p className="text-lg font-semibold">
+              <strong>Remaining Amount:</strong> {remainingAmount}
             </p>
           </div>
         </div>
@@ -126,10 +135,10 @@ const InvoiceDetails: React.FC = () => {
                   {row.qty}
                 </TableCell>
                 <TableCell className="border border-gray-300 p-2 text-right">
-                  ${row.price.toFixed(2)}
+                  ₹{row.price.toFixed(2)}
                 </TableCell>
                 <TableCell className="border border-gray-300 p-2 text-right">
-                  ${row.total.toFixed(2)}
+                  ₹{row.total.toFixed(2)}
                 </TableCell>
               </TableRow>
             ))}

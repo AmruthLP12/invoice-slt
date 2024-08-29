@@ -137,7 +137,7 @@ const InvoiceTable: React.FC = () => {
       )}
 
       <div
-        className={`p-6 bg-white shadow-md rounded-lg ${
+        className={`p-6 bg-white shadow-md rounded-lg ₹{
           isLoading ? "opacity-50 pointer-events-none" : ""
         }`}
       >
@@ -199,7 +199,7 @@ const InvoiceTable: React.FC = () => {
           <Button
             onClick={handleSubmit}
             disabled={isLoading}
-            className={`bg-green-700 text-white hover:text-gray-300 hover:bg-green-600 ${
+            className={`bg-green-700 text-white hover:text-gray-300 hover:bg-green-600 ₹{
               isLoading ? "cursor-not-allowed opacity-50" : ""
             }`}
           >
