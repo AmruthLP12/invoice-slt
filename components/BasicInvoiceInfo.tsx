@@ -37,7 +37,7 @@ const BasicInvoiceInfo: React.FC<BasicInvoiceInfoProps> = ({ invoices }) => {
           <TableRow key={index} className="border border-gray-200">
             <TableCell className="p-2">
               {/* Wrap card number with a Link */}
-              <Link href={`/invoices/₹{invoice.cardNumber}`}>
+              <Link href={`/invoices/${invoice.cardNumber}`}>
                 <p className="text-blue-500 hover:underline">{invoice.cardNumber}</p>
               </Link>
             </TableCell>

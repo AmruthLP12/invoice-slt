@@ -40,7 +40,7 @@ const InvoiceDetails: React.FC = () => {
     const fetchInvoiceDetails = async () => {
       try {
         if (!cardNumber) return;
-        const response = await axios.get(`/api?cardNumber=₹{cardNumber}`);
+        const response = await axios.get(`/api?cardNumber=${cardNumber}`);
         setInvoice(response.data);
         setIsLoading(false);
       } catch (error) {
