@@ -9,15 +9,31 @@ const LoadDB = async () => {
 
 LoadDB();
 
-export async function GET(request: NextRequest) {
-  await LoadDB(); // Ensure DB is connected
-  const invoices = await InvoiceModel.find({});
-  return NextResponse.json({ invoices });
+export async function GET() {
+  await connectDb();
+
+  try {
+    const invoices = await InvoiceModel.find({});
+    return NextResponse.json(invoices);
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to fetch invoices" },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(request: NextRequest) {
   await LoadDB(); // Ensure DB is connected
-  const { customerName, phoneNumber, cardNumber, selectedDate, rows, advance } = await request.json();
+  const {
+    customerName,
+    phoneNumber,
+    cardNumber,
+    selectedDate,
+    rows,
+    advance,
+    today,
+  } = await request.json();
 
   await InvoiceModel.create({
     customerName,
@@ -26,6 +42,7 @@ export async function POST(request: NextRequest) {
     selectedDate,
     rows,
     advance,
+    today,
   });
 
   return NextResponse.json({ msg: "Invoice Created" });

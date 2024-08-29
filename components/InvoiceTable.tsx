@@ -12,6 +12,7 @@ import CustomerDetails from "./CustomerDetails";
 import DatePickers from "./DatePickers";
 import InvoiceTableBody from "./InvoiceTableContent";
 import axios from "axios";
+import { TailSpin } from "react-loader-spinner";
 
 const InvoiceTable: React.FC = () => {
   const [rows, setRows] = useState<InvoiceRow[]>(fixedRows);
@@ -22,6 +23,7 @@ const InvoiceTable: React.FC = () => {
   const [cardNumber, setCardNumber] = useState<string>("");
   const [isDateValid, setIsDateValid] = useState<boolean>(true);
   const [isCardNumberValid, setIsCardNumberValid] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const today = new Date();
 
@@ -67,7 +69,6 @@ const InvoiceTable: React.FC = () => {
     setCardNumber("");
   };
 
-  // Handle submit button
   const handleSubmit = async () => {
     let isValid = true;
 
@@ -93,7 +94,8 @@ const InvoiceTable: React.FC = () => {
     setIsCardNumberValid(true); // Reset validation state
     setIsDateValid(true); // Reset validation state
 
-    // If all validations pass, continue with submission logic
+    setIsLoading(true); // Set loading state to true
+
     try {
       const response = await axios.post("/api/", {
         customerName,
@@ -113,6 +115,8 @@ const InvoiceTable: React.FC = () => {
       }
     } catch (error) {
       toast.error("An error occurred while creating the invoice.");
+    } finally {
+      setIsLoading(false); // Set loading state to false after submission completes
     }
   };
 
@@ -180,9 +184,19 @@ const InvoiceTable: React.FC = () => {
           </Button>
           <Button
             onClick={handleSubmit}
-            className="bg-green-700 text-white hover:text-gray-300 hover:bg-green-600"
+            disabled={isLoading}
+            className={`bg-green-700 text-white hover:text-gray-300 hover:bg-green-600 ${
+              isLoading ? "cursor-not-allowed opacity-50" : ""
+            }`}
           >
-            Submit
+            {isLoading ? (
+              <div className="flex items-center">
+                <TailSpin height="20" width="20" color="white" />
+                <span className="ml-2">Submitting...</span>
+              </div>
+            ) : (
+              "Submit"
+            )}
           </Button>
         </div>
       </div>
