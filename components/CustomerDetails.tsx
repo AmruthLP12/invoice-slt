@@ -30,7 +30,7 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
           Card Number: <span className="text-red-700">*</span>
         </label>
         <Input
-          type="text"
+          type="number"
           value={cardNumber}
           onChange={(e) => {
             setCardNumber(e.target.value);
@@ -57,7 +57,7 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
       <div>
         <label className="block mb-1">Phone Number:</label>
         <Input
-          type="text"
+          type="number"
           value={phoneNumber}
           onChange={(e) => setPhoneNumber(e.target.value)}
           className="w-full p-2 border border-gray-300 rounded"

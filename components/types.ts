@@ -4,5 +4,6 @@ export interface InvoiceRow {
     qty: number;
     price: number;
     total: number;
+    isExtra?: boolean;
   }
   

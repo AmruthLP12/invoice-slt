@@ -77,3 +77,32 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield; /* Disable for Firefox */
 }
+
+/* globals.css */
+
+/* Ensure that the body and html take up the full height */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+/* Style for sidebar and main content */
+.flex {
+  display: flex;
+}
+
+.h-screen {
+  height: 100vh;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.p-6 {
+  padding: 1.5rem;
+}
+
+.overflow-y-auto {
+  overflow-y: auto;
+}

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-
 import { InvoiceRow } from "@/components/types"; // Import InvoiceRow type
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,9 +9,11 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CustomerDetails from "./CustomerDetails";
 import DatePickers from "./DatePickers";
-import InvoiceTableBody from "./InvoiceTableContent";
+import InvoiceTableBody from "./InvoiceTableBody";
 import axios from "axios";
 import { TailSpin } from "react-loader-spinner";
+import Link from "next/link";
+import { MoveRight } from "lucide-react";
 
 const InvoiceTable: React.FC = () => {
   const [rows, setRows] = useState<InvoiceRow[]>(fixedRows);
@@ -127,7 +128,19 @@ const InvoiceTable: React.FC = () => {
   return (
     <>
       <ToastContainer theme="light" position="bottom-right" />
-      <div className="p-6 bg-white shadow-md rounded-lg">
+
+      {/* Full-Screen Loader */}
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <TailSpin height="80" width="80" color="white" />
+        </div>
+      )}
+
+      <div
+        className={`p-6 bg-white shadow-md rounded-lg ${
+          isLoading ? "opacity-50 pointer-events-none" : ""
+        }`}
+      >
         <h2 className="text-xl font-semibold mb-4">Invoice Generator</h2>
 
         {/* Customer Details */}
@@ -156,6 +169,7 @@ const InvoiceTable: React.FC = () => {
           rows={rows}
           handleChange={handleChange}
           tableHeaders={tableHeaders}
+          setRows={setRows}
         />
 
         {/* Totals and Actions */}
@@ -189,14 +203,7 @@ const InvoiceTable: React.FC = () => {
               isLoading ? "cursor-not-allowed opacity-50" : ""
             }`}
           >
-            {isLoading ? (
-              <div className="flex items-center">
-                <TailSpin height="20" width="20" color="white" />
-                <span className="ml-2">Submitting...</span>
-              </div>
-            ) : (
-              "Submit"
-            )}
+            Submit
           </Button>
         </div>
       </div>
