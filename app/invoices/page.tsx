@@ -123,17 +123,7 @@ const InvoicesPage: React.FC = () => {
           </button>
         </div>
         <BasicInvoiceInfo invoices={simplifiedInvoices} />
-        {simplifiedInvoices.map((invoice) => (
-          <div key={invoice.cardNumber} className="border-b py-2">
-            {/* Wrap the card number with a Link */}
-            <Link href={`/invoices/${invoice.cardNumber}`}>
-              <p className="text-blue-500 hover:underline">
-                {invoice.cardNumber}
-              </p>
-            </Link>
-            {/* Display other details if needed */}
-          </div>
-        ))}
+        
       </div>
     </>
   );

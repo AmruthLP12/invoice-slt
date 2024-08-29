@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from 'next/navigation';
+import { useParams } from "next/navigation";
 import axios from "axios";
 import { TailSpin } from "react-loader-spinner";
 import { ToastContainer, toast } from "react-toastify";
@@ -61,38 +61,76 @@ const InvoiceDetails: React.FC = () => {
   }
 
   if (!invoice) {
-    return <div>No details found for this invoice.</div>;
+    return (
+      <div className="p-6 bg-white shadow-md rounded-lg">
+        No details found for this invoice.
+      </div>
+    );
   }
 
   return (
     <>
       <ToastContainer theme="light" position="bottom-right" />
-      <div className="p-6 bg-white shadow-md rounded-lg">
-        <h2 className="text-xl font-semibold mb-4">Invoice Details</h2>
-        <p><strong>Customer Name:</strong> {invoice.customerName}</p>
-        <p><strong>Phone Number:</strong> {invoice.phoneNumber}</p>
-        <p><strong>Card Number:</strong> {invoice.cardNumber}</p>
-        <p><strong>Selected Date:</strong> {new Date(invoice.selectedDate).toLocaleDateString()}</p>
-        <p><strong>Advance:</strong> ${invoice.advance}</p>
-        <p><strong>Date Created:</strong> {new Date(invoice.today).toLocaleDateString()}</p>
-        
-        <h3 className="text-lg font-semibold mt-4">Invoice Items:</h3>
-        <Table>
+      <div className="p-6 bg-white shadow-md rounded-lg border border-gray-200">
+        <h2 className="text-2xl font-semibold mb-6">Invoice Details</h2>
+        <div className="mb-6 space-y-4">
+          <div className="flex flex-col space-y-2">
+            <p className="text-lg font-semibold">
+              <strong>Customer Name:</strong> {invoice.customerName}
+            </p>
+            <p className="text-lg font-semibold">
+              <strong>Phone Number:</strong> {invoice.phoneNumber}
+            </p>
+            <p className="text-lg font-semibold">
+              <strong>Card Number:</strong> {invoice.cardNumber}
+            </p>
+            <p className="text-lg font-semibold">
+              <strong>Selected Date:</strong>{" "}
+              {new Date(invoice.selectedDate).toLocaleDateString()}
+            </p>
+            <p className="text-lg font-semibold">
+              <strong>Advance:</strong> ${invoice.advance.toFixed(2)}
+            </p>
+            <p className="text-lg font-semibold">
+              <strong>Date Created:</strong>{" "}
+              {new Date(invoice.today).toLocaleDateString()}
+            </p>
+          </div>
+        </div>
+
+        <h3 className="text-xl font-semibold mb-4">Invoice Items:</h3>
+        <Table className="w-full border-collapse border border-gray-300">
           <TableHeader>
             <TableRow>
-              <TableCell>Description</TableCell>
-              <TableCell>Quantity</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Total</TableCell>
+              <TableCell className="border border-gray-300 p-2 font-medium">
+                Description
+              </TableCell>
+              <TableCell className="border border-gray-300 p-2 font-medium">
+                Quantity
+              </TableCell>
+              <TableCell className="border border-gray-300 p-2 font-medium">
+                Price
+              </TableCell>
+              <TableCell className="border border-gray-300 p-2 font-medium">
+                Total
+              </TableCell>
             </TableRow>
           </TableHeader>
           <TableBody>
             {invoice.rows.map((row, index) => (
               <TableRow key={index}>
-                <TableCell>{row.description}</TableCell>
-                <TableCell>{row.qty}</TableCell>
-                <TableCell>${row.price}</TableCell>
-                <TableCell>${row.total}</TableCell>
+                <TableCell className="border border-gray-300 p-2">
+                  {row.description}
+                </TableCell>
+                <TableCell className="border border-gray-300 p-2 text-center">
+                  {row.qty}
+                </TableCell>
+                <TableCell className="border border-gray-300 p-2 text-right">
+                  ${row.price.toFixed(2)}
+                </TableCell>
+                <TableCell className="border border-gray-300 p-2 text-right">
+                  ${row.total.toFixed(2)}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

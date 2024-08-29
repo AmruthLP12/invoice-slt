@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -13,8 +14,8 @@ interface BasicInvoiceInfoProps {
     selectedDate: Date;
     advance: number;
     totalAmount: number;
-    remainingAmount:number;
-    today:Date;
+    remainingAmount: number;
+    today: Date;
   }[];
 }
 
@@ -34,12 +35,17 @@ const BasicInvoiceInfo: React.FC<BasicInvoiceInfoProps> = ({ invoices }) => {
       <TableBody>
         {invoices.map((invoice, index) => (
           <TableRow key={index} className="border border-gray-200">
-            <TableCell className="p-2">{invoice.cardNumber}</TableCell>
+            <TableCell className="p-2">
+              {/* Wrap card number with a Link */}
+              <Link href={`/invoices/${invoice.cardNumber}`}>
+                <p className="text-blue-500 hover:underline">{invoice.cardNumber}</p>
+              </Link>
+            </TableCell>
             <TableCell className="p-2">{invoice.today.toLocaleDateString()}</TableCell>
             <TableCell className="p-2">{invoice.selectedDate.toLocaleDateString()}</TableCell>
-            <TableCell className="p-2">{invoice.advance}</TableCell>
-            <TableCell className="p-2">{invoice.totalAmount}</TableCell>
-            <TableCell className="p-2">{invoice.remainingAmount}</TableCell>
+            <TableCell className="p-2">${invoice.totalAmount}</TableCell>
+            <TableCell className="p-2">${invoice.advance}</TableCell>
+            <TableCell className="p-2">${invoice.remainingAmount}</TableCell>
           </TableRow>
         ))}
       </TableBody>
