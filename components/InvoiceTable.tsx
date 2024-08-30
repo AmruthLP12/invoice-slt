@@ -12,8 +12,6 @@ import DatePickers from "./DatePickers";
 import InvoiceTableBody from "./InvoiceTableBody";
 import axios from "axios";
 import { TailSpin } from "react-loader-spinner";
-import Link from "next/link";
-import { MoveRight } from "lucide-react";
 
 const InvoiceTable: React.FC = () => {
   const [rows, setRows] = useState<InvoiceRow[]>(fixedRows);

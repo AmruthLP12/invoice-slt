@@ -1,6 +1,6 @@
-// components/CustomerDetails.tsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
+import axios from "axios";
 
 interface CustomerDetailsProps {
   cardNumber: string;
@@ -23,6 +23,28 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
   isCardNumberValid,
   setIsCardNumberValid,
 }) => {
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (phoneNumber) {
+        try {
+          const response = await axios.get(`/api/?phoneNumber=${phoneNumber}`);
+          setSuggestions(response.data);
+          setShowSuggestions(true);
+        } catch (error) {
+          console.error("Failed to fetch suggestions:", error);
+        }
+      } else {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
+    };
+
+    fetchSuggestions();
+  }, [phoneNumber]);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
       <div>
@@ -40,9 +62,7 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
           required
         />
         {!isCardNumberValid && (
-          <p className="text-red-500 text-sm">
-            Please Enter the card number.
-          </p>
+          <p className="text-red-500 text-sm">Please Enter the card number.</p>
         )}
       </div>
       <div>
@@ -54,7 +74,7 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
           className="w-full p-2 border border-gray-300 rounded"
         />
       </div>
-      <div>
+      <div className="relative">
         <label className="block mb-1">Phone Number:</label>
         <Input
           type="number"
@@ -62,6 +82,23 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
           onChange={(e) => setPhoneNumber(e.target.value)}
           className="w-full p-2 border border-gray-300 rounded"
         />
+        {/* Suggestions Dropdown */}
+        {showSuggestions && suggestions.length > 0 && (
+          <ul className="absolute left-0 right-0 bg-white border border-gray-300 rounded shadow-md max-h-40 overflow-y-auto z-10">
+            {suggestions.map((suggestion, index) => (
+              <li
+                key={index}
+                onClick={() => {
+                  setPhoneNumber(suggestion);
+                  setShowSuggestions(false);
+                }}
+                className="p-2 hover:bg-gray-100 cursor-pointer"
+              >
+                {suggestion}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

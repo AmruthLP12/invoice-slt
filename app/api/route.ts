@@ -12,28 +12,50 @@ const loadDb = async () => {
 export async function GET(request: NextRequest) {
   await loadDb();
 
-  // Check if a specific invoice is being requested
   const cardNumber = request.nextUrl.searchParams.get("cardNumber");
+  const phoneNumber = request.nextUrl.searchParams.get("phoneNumber");
 
   if (cardNumber) {
-    // Fetch a specific invoice by cardNumber
     try {
       const invoice = await InvoiceModel.findOne({ cardNumber });
       if (!invoice) {
-        return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
+        return NextResponse.json(
+          { error: "Invoice not found" },
+          { status: 404 }
+        );
       }
       return NextResponse.json(invoice);
     } catch (error) {
-      return NextResponse.json({ error: "Failed to fetch invoice" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Failed to fetch invoice" },
+        { status: 500 }
+      );
     }
   }
 
-  // Fetch all invoices
+  if (phoneNumber) {
+    try {
+      const suggestions = await InvoiceModel.find({
+        phoneNumber: { $regex: phoneNumber, $options: "i" },
+      }).distinct("phoneNumber");
+
+      return NextResponse.json(suggestions);
+    } catch (error) {
+      return NextResponse.json(
+        { error: "Failed to fetch suggestions" },
+        { status: 500 }
+      );
+    }
+  }
+
   try {
     const invoices = await InvoiceModel.find({});
     return NextResponse.json(invoices);
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch invoices" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch invoices" },
+      { status: 500 }
+    );
   }
 }
 
@@ -63,7 +85,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ msg: "Invoice Created" });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to create invoice" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create invoice" },
+      { status: 500 }
+    );
   }
 }
 
@@ -79,7 +104,10 @@ export async function DELETE(request: NextRequest) {
     await InvoiceModel.findByIdAndDelete(mongoId);
     return NextResponse.json({ msg: "Invoice Deleted" });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to delete invoice" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to delete invoice" },
+      { status: 500 }
+    );
   }
 }
 
@@ -104,6 +132,9 @@ export async function PUT(request: NextRequest) {
       action === "pending" ? "Invoice Marked as Pending" : "Invoice Completed";
     return NextResponse.json({ msg: message });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to update invoice" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update invoice" },
+      { status: 500 }
+    );
   }
 }
