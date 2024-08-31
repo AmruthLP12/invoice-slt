@@ -7,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 
 interface BasicInvoiceInfoProps {
   invoices: {
@@ -16,11 +17,18 @@ interface BasicInvoiceInfoProps {
     totalAmount: number;
     remainingAmount: number;
     today: Date;
-    phoneNumber : string;
+    phoneNumber: string;
+    isDelivered: boolean;
+    onMarkAsDelivered?: (cardNumber: string) => void; 
   }[];
+  filterDelivered?: boolean;
 }
 
-const BasicInvoiceInfo: React.FC<BasicInvoiceInfoProps> = ({ invoices }) => {
+const BasicInvoiceInfo: React.FC<BasicInvoiceInfoProps> = ({ invoices, filterDelivered }) => {
+  const filteredInvoices = filterDelivered === undefined
+    ? invoices
+    : invoices.filter(invoice => invoice.isDelivered === filterDelivered);
+
   return (
     <Table className="w-full border-collapse border border-gray-200">
       <TableHeader>
@@ -32,13 +40,13 @@ const BasicInvoiceInfo: React.FC<BasicInvoiceInfoProps> = ({ invoices }) => {
           <TableCell className="border border-gray-300 p-2">Total Amount</TableCell>
           <TableCell className="border border-gray-300 p-2">Advance</TableCell>
           <TableCell className="border border-gray-300 p-2">Remaining Amount</TableCell>
+          <TableCell className="border border-gray-300 p-2">Actions</TableCell>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {invoices.map((invoice, index) => (
+        {filteredInvoices.map((invoice, index) => (
           <TableRow key={index} className="border border-gray-200">
             <TableCell className="p-2">
-              {/* Wrap card number with a Link */}
               <Link href={`/invoices/${invoice.cardNumber}`}>
                 <p className="text-blue-500 hover:underline">{invoice.cardNumber}</p>
               </Link>
@@ -49,6 +57,21 @@ const BasicInvoiceInfo: React.FC<BasicInvoiceInfoProps> = ({ invoices }) => {
             <TableCell className="p-2">₹{invoice.totalAmount}</TableCell>
             <TableCell className="p-2">₹{invoice.advance}</TableCell>
             <TableCell className="p-2">₹{invoice.remainingAmount}</TableCell>
+            <TableCell className="p-2">
+              {invoice.isDelivered ? (
+                <Button
+                  onClick={() => invoice.onMarkAsDelivered?.(invoice.cardNumber)}
+                  className="bg-red-500 text-white hover:bg-red-600"
+                >
+                  Mark as Undelivered
+                </Button>
+              ) : <Button
+              onClick={() => invoice.onMarkAsDelivered?.(invoice.cardNumber)}
+              className="bg-red-500 text-white hover:bg-red-600"
+            >
+              Mark as Delivered
+            </Button>}
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>

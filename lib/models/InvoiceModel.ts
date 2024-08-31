@@ -16,7 +16,8 @@ export interface InvoiceDocument extends Document {
   selectedDate: Date;
   advance: number;
   rows: InvoiceRow[];
-  today:Date;
+  today: Date;
+  isDelivered: Boolean;
 }
 
 // Schema for individual invoice row
@@ -64,10 +65,15 @@ const InvoiceSchema = new Schema<InvoiceDocument>(
     rows: {
       type: [InvoiceRowSchema],
     },
-    today:{
+    today: {
       type: Date,
-    }
+    },
+    isDelivered: {
+      type:Boolean,
+      default:false
+    },
   },
+
   { timestamps: true }
 );
 

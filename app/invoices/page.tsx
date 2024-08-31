@@ -9,6 +9,7 @@ import BasicInvoiceInfo from "@/components/BasicInvoiceInfo";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/date-picker";
 import { RefreshCcw } from "lucide-react"; // Import the reset icon
+import { Button } from "@/components/ui/button";
 
 interface Invoice {
   _id: string;
@@ -18,19 +19,22 @@ interface Invoice {
   selectedDate: string;
   advance: number;
   today: string;
+  isDelivered: boolean;
   rows: {
     description: string;
     qty: number;
     price: number;
     total: number;
   }[];
+  totalAmount?: number;
+  remainingAmount?: number;
 }
 
 const InvoicesPage: React.FC = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [filteredInvoices, setFilteredInvoices] = useState<Invoice[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [searchQuery, setSearchQuery] = useState<string>(""); // Renamed to generalize input
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
   useEffect(() => {
@@ -51,7 +55,6 @@ const InvoicesPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Filter invoices based on search criteria
     const filtered = invoices.filter((invoice) => {
       const matchesQuery =
         invoice.cardNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -60,16 +63,33 @@ const InvoicesPage: React.FC = () => {
         selectedDate === undefined ||
         new Date(invoice.selectedDate).toLocaleDateString() ===
           selectedDate.toLocaleDateString();
+      const isNotDelivered = !invoice.isDelivered;
 
-      return matchesQuery && matchesDate;
+      return matchesQuery && matchesDate && isNotDelivered;
     });
 
     setFilteredInvoices(filtered);
   }, [searchQuery, selectedDate, invoices]);
 
   const handleResetFilters = () => {
-    setSearchQuery(""); // Reset search input
-    setSelectedDate(undefined); // Reset date picker
+    setSearchQuery("");
+    setSelectedDate(undefined);
+  };
+
+  const handleMarkAsDelivered = async (invoiceId: string) => {
+    try {
+      await axios.put(`/api?mongoId=${invoiceId}&action=deliver`);
+      toast.success("Invoice marked as delivered.");
+      setInvoices((prevInvoices) =>
+        prevInvoices.map((invoice) =>
+          invoice._id === invoiceId
+            ? { ...invoice, isDelivered: true }
+            : invoice
+        )
+      );
+    } catch (error) {
+      toast.error("Failed to mark invoice as delivered.");
+    }
   };
 
   if (isLoading) {
@@ -84,18 +104,16 @@ const InvoicesPage: React.FC = () => {
     return <div>No invoices found.</div>;
   }
 
-  // Prepare data for the BasicInvoiceInfo component
   const simplifiedInvoices = filteredInvoices.map((invoice) => {
     const grandTotal = invoice.rows.reduce((acc, row) => acc + row.total, 0);
     const remainingAmount = grandTotal - invoice.advance;
+
     return {
-      cardNumber: invoice.cardNumber,
-      selectedDate: new Date(invoice.selectedDate),
-      advance: invoice.advance,
+      ...invoice,
       totalAmount: grandTotal,
       remainingAmount,
+      selectedDate: new Date(invoice.selectedDate),
       today: new Date(invoice.today),
-      phoneNumber : invoice.phoneNumber,
     };
   });
 
@@ -105,7 +123,6 @@ const InvoicesPage: React.FC = () => {
       <div className="p-6 bg-white shadow-md rounded-lg">
         <h2 className="text-xl font-semibold mb-4">Invoices</h2>
         <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row gap-4 mb-4">
-          {/* Responsive Search and Date Picker */}
           <div className="flex-1">
             <Input
               type="text"
@@ -119,20 +136,27 @@ const InvoicesPage: React.FC = () => {
             <DatePicker date={selectedDate} onDateChange={setSelectedDate} />
           </div>
           <div>
-            {/* Reset Filters Button */}
-            <button
+            <Button
               onClick={handleResetFilters}
-              className="p-2 rounded-full border border-gray-300 hover:bg-gray-100"
+              className="p-2 rounded-full border border-gray-300 bg-white hover:bg-gray-100"
               aria-label="Reset Filters"
             >
               <RefreshCcw className="h-5 w-5 text-gray-600" />
-            </button>
+            </Button>
           </div>
         </div>
-        <BasicInvoiceInfo invoices={simplifiedInvoices} />
+        <BasicInvoiceInfo
+          invoices={simplifiedInvoices.map((invoice) => ({
+            ...invoice,
+            onMarkAsDelivered: (cardNumber: string) =>
+              handleMarkAsDelivered(invoice._id),
+          }))}
+          filterDelivered={false} // Only undelivered invoices
+        />
       </div>
     </>
   );
 };
 
 export default InvoicesPage;
+

@@ -1,16 +1,15 @@
 "use client";
-import React, { useState } from "react";
-import { SidebarUi, SidebarBody, SidebarLink } from "./ui/sidebar";
+import { cn } from "@/lib/utils";
 import {
-  IconArrowLeft,
-  IconBrandTabler,
-  IconSettings,
-  IconUserBolt,
+  IconCircleDashedCheck,
+  IconFolderPlus,
+  IconInfoHexagon
 } from "@tabler/icons-react";
-import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { useState } from "react";
+import { SidebarBody, SidebarLink, SidebarUi } from "./ui/sidebar";
 
 export function Sidebar() {
   const [open, setOpen] = useState(false);
@@ -24,23 +23,23 @@ export function Sidebar() {
       label: "Home",
       href: "/", 
       icon: (
-        <IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconFolderPlus className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Details",
       href: "/invoices",
       icon: (
-        <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconInfoHexagon className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
-    // {
-    //   label: "Settings",
-    //   href: "#", // Updated path
-    //   icon: (
-    //     <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-    //   ),
-    // },
+    {
+      label: "Delivered",
+      href: "/delivered", // Updated path
+      icon: (
+        <IconCircleDashedCheck className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+      ),
+    },
     // {
     //   label: "Logout",
     //   href: "#", // Updated path
@@ -81,7 +80,7 @@ export function Sidebar() {
                   href: "/",
                   icon: (
                     <Image
-                      src="https://assets.aceternity.com/manu.png"
+                      src="/profile.svg"
                       className="h-7 w-7 flex-shrink-0 rounded-full"
                       width={50}
                       height={50}

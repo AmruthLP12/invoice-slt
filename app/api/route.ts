@@ -122,14 +122,14 @@ export async function PUT(request: NextRequest) {
   }
 
   const updateData =
-    action === "pending" ? { isCompleted: false } : { isCompleted: true };
+    action === "deliver" ? { isDelivered: true } : { isDelivered: false };
 
   try {
     await InvoiceModel.findByIdAndUpdate(mongoId, {
       $set: updateData,
     });
     const message =
-      action === "pending" ? "Invoice Marked as Pending" : "Invoice Completed";
+      action === "deliver" ? "Invoice Marked as Delivered" : "Invoice Marked as Undelivered";
     return NextResponse.json({ msg: message });
   } catch (error) {
     return NextResponse.json(
@@ -138,3 +138,4 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
+
