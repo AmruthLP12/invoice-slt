@@ -12,6 +12,7 @@ import DatePickers from "./DatePickers";
 import InvoiceTableBody from "./InvoiceTableBody";
 import axios from "axios";
 import { TailSpin } from "react-loader-spinner";
+import { submitInvoice } from "@/services/service";
 
 const InvoiceTable: React.FC = () => {
   const [rows, setRows] = useState<InvoiceRow[]>(fixedRows);
@@ -95,25 +96,23 @@ const InvoiceTable: React.FC = () => {
 
     setIsLoading(true); // Set loading state to true
 
-    try {
-      const response = await axios.post("/api/", {
-        customerName,
-        phoneNumber,
-        cardNumber,
-        selectedDate,
-        advance,
-        rows,
-        today,
-      });
+    const invoice = {
+      customerName,
+      phoneNumber,
+      cardNumber,
+      selectedDate,
+      advance,
+      rows,
+      today,
+    };
 
-      if (response.status === 200) {
-        toast.success("Invoice created successfully!");
+    try {
+      const success = await submitInvoice(invoice);
+      if (success) {
         handleReset(); // Reset form after successful submission
-      } else {
-        toast.error("Failed to create invoice.");
       }
     } catch (error) {
-      toast.error("An error occurred while creating the invoice.");
+      // Handle the error if needed
     } finally {
       setIsLoading(false); // Set loading state to false after submission completes
     }

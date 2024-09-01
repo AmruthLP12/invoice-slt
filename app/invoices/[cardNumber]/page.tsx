@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { fetchInvoiceDetails } from "@/services/service";
 
 interface Invoice {
   _id: string;
@@ -37,20 +38,20 @@ const InvoiceDetails: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchInvoiceDetails = async () => {
+    const loadInvoiceDetails = async () => {
       try {
         if (!cardNumber) return;
-        const response = await axios.get(`/api?cardNumber=${cardNumber}`);
-        setInvoice(response.data);
+        const data = await fetchInvoiceDetails(cardNumber); // Use service function
+        setInvoice(data);
         setIsLoading(false);
       } catch (error) {
-        toast.error("Failed to fetch invoice details.");
-        setIsLoading(false);
+        setIsLoading(false); // Error handling is done in the service
       }
     };
 
-    fetchInvoiceDetails();
+    loadInvoiceDetails();
   }, [cardNumber]);
+
 
   if (isLoading) {
     return (

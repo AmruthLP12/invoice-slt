@@ -3,7 +3,8 @@ import { cn } from "@/lib/utils";
 import {
   IconCircleDashedCheck,
   IconFolderPlus,
-  IconInfoHexagon
+  IconInfoHexagon,
+  IconLayoutDashboard
 } from "@tabler/icons-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -40,13 +41,13 @@ export function Sidebar() {
         <IconCircleDashedCheck className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
-    // {
-    //   label: "Logout",
-    //   href: "#", // Updated path
-    //   icon: (
-    //     <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-    //   ),
-    // },
+    {
+      label: "DashBoard",
+      href: "#", // Updated path
+      icon: (
+        <IconLayoutDashboard className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+      ),
+    },
   ];
 
   return (

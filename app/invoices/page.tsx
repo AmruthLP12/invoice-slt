@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { TailSpin } from "react-loader-spinner";
 import BasicInvoiceInfo from "@/components/BasicInvoiceInfo";
@@ -10,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/date-picker";
 import { RefreshCcw } from "lucide-react"; // Import the reset icon
 import { Button } from "@/components/ui/button";
+import { fetchInvoices, markInvoiceAsDelivered } from "@/services/service"; // Import the service functions
 
 interface Invoice {
   _id: string;
@@ -38,20 +38,18 @@ const InvoicesPage: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
   useEffect(() => {
-    const fetchInvoices = async () => {
+    const loadInvoices = async () => {
       try {
-        const response = await axios.get("/api");
-        const data = response.data.reverse();
+        const data = await fetchInvoices(); // Use the service function to fetch invoices
         setInvoices(data);
         setFilteredInvoices(data);
         setIsLoading(false);
       } catch (error) {
-        toast.error("Failed to fetch invoices.");
         setIsLoading(false);
       }
     };
 
-    fetchInvoices();
+    loadInvoices();
   }, []);
 
   useEffect(() => {
@@ -77,19 +75,12 @@ const InvoicesPage: React.FC = () => {
   };
 
   const handleMarkAsDelivered = async (invoiceId: string) => {
-    try {
-      await axios.put(`/api?mongoId=${invoiceId}&action=deliver`);
-      toast.success("Invoice marked as delivered.");
-      setInvoices((prevInvoices) =>
-        prevInvoices.map((invoice) =>
-          invoice._id === invoiceId
-            ? { ...invoice, isDelivered: true }
-            : invoice
-        )
-      );
-    } catch (error) {
-      toast.error("Failed to mark invoice as delivered.");
-    }
+    await markInvoiceAsDelivered(invoiceId); // Use the service function to mark as delivered
+    setInvoices((prevInvoices) =>
+      prevInvoices.map((invoice) =>
+        invoice._id === invoiceId ? { ...invoice, isDelivered: true } : invoice
+      )
+    );
   };
 
   if (isLoading) {
@@ -159,4 +150,3 @@ const InvoicesPage: React.FC = () => {
 };
 
 export default InvoicesPage;
-
