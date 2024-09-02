@@ -122,6 +122,11 @@ const InvoiceTable: React.FC = () => {
   const grandTotal = rows.reduce((acc, row) => acc + row.total, 0);
   const remainingAmount = grandTotal - advance;
 
+  const disableScrollOnInput = (event: React.WheelEvent<HTMLInputElement>) => {
+    event.currentTarget.blur(); // Optionally blur the input to prevent the scroll
+    event.preventDefault(); // Prevent the default scroll behavior
+  };
+
   return (
     <>
       <ToastContainer theme="light" position="bottom-right" />
@@ -177,6 +182,7 @@ const InvoiceTable: React.FC = () => {
               type="number"
               value={advance === 0 ? "" : advance} // Show empty string if zero
               onChange={handleAdvanceChange}
+              onWheel={disableScrollOnInput} // Disable scrolling
               className="w-full p-2 border border-gray-300 rounded"
               placeholder="0"
             />
