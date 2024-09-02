@@ -8,12 +8,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { InvoiceRow } from "@/components/types"; // Import InvoiceRow type
+import { InvoiceRow } from "@/components/types";
 import { CircleMinus, CirclePlus } from "lucide-react";
 
 interface InvoiceTableBodyProps {
   rows: InvoiceRow[];
-  setRows: React.Dispatch<React.SetStateAction<InvoiceRow[]>>; // Add setRows prop
+  setRows: React.Dispatch<React.SetStateAction<InvoiceRow[]>>;
   handleChange: (
     index: number,
     event: React.ChangeEvent<HTMLInputElement>
@@ -23,27 +23,32 @@ interface InvoiceTableBodyProps {
 
 const InvoiceTableBody: React.FC<InvoiceTableBodyProps> = ({
   rows,
-  setRows, // Destructure setRows prop
+  setRows,
   handleChange,
   tableHeaders,
 }) => {
   const handleAddRow = (index: number) => {
     const newRow = {
       description: rows[index].description,
-      qty: 0, // Set to default value
-      price: 0, // Set to default value
-      total: 0, // Set to default value
-      isExtra: true, // Mark the new row as an extra
+      qty: 0,
+      price: 0,
+      total: 0,
+      isExtra: true,
     };
-    
+
     const updatedRows = [...rows];
-    updatedRows.splice(index + 1, 0, newRow); // Insert the new row right after the current one
+    updatedRows.splice(index + 1, 0, newRow);
     setRows(updatedRows);
   };
 
   const handleRemoveRow = (index: number) => {
-    const updatedRows = rows.filter((_, rowIndex) => rowIndex !== index); // Remove the row at the given index
+    const updatedRows = rows.filter((_, rowIndex) => rowIndex !== index);
     setRows(updatedRows);
+  };
+
+  const disableScrollOnInput = (event: React.WheelEvent<HTMLInputElement>) => {
+    event.currentTarget.blur(); // Optionally blur the input to prevent the scroll
+    event.preventDefault(); // Prevent the default scroll behavior
   };
 
   return (
@@ -55,8 +60,7 @@ const InvoiceTableBody: React.FC<InvoiceTableBodyProps> = ({
               {header.label}
             </TableCell>
           ))}
-          <TableCell className="border border-gray-300 p-2">Actions</TableCell>{" "}
-          {/* Actions header */}
+          <TableCell className="border border-gray-300 p-2">Actions</TableCell>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -75,6 +79,7 @@ const InvoiceTableBody: React.FC<InvoiceTableBodyProps> = ({
                 name="qty"
                 value={row.qty === 0 ? "" : row.qty}
                 onChange={(e) => handleChange(index, e)}
+                onWheel={disableScrollOnInput} // Disable scrolling
                 className="w-full p-1 border border-gray-300 rounded"
                 placeholder="0"
               />
@@ -85,21 +90,20 @@ const InvoiceTableBody: React.FC<InvoiceTableBodyProps> = ({
                 name="price"
                 value={row.price === 0 ? "" : row.price}
                 onChange={(e) => handleChange(index, e)}
+                onWheel={disableScrollOnInput} // Disable scrolling
                 className="w-full p-1 border border-gray-300 rounded"
                 placeholder="0"
               />
             </TableCell>
             <TableCell className="p-2">{row.total}</TableCell>
             <TableCell className="p-2 flex gap-2">
-              {" "}
-              {/* Actions cell */}
               <button
                 onClick={() => handleAddRow(index)}
                 className="text-green-600"
               >
                 <CirclePlus className="h-5 w-5" />
               </button>
-              {row.isExtra && ( // Only show the minus button for extra rows
+              {row.isExtra && (
                 <button
                   onClick={() => handleRemoveRow(index)}
                   className="text-red-600"
