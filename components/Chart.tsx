@@ -27,17 +27,6 @@ interface Invoice {
   remainingAmount?: number;
 }
 
-// Fetch all invoices
-// const fetchInvoices = async (): Promise<Invoice[]> => {
-//   try {
-//     const response = await axios.get("/api");
-//     return response.data.reverse(); // Assuming you want the latest invoices first
-//   } catch (error) {
-//     toast.error("Failed to fetch invoices.");
-//     throw error;
-//   }
-// };
-
 function Example() {
   const chartRef = useRef<HTMLCanvasElement | null>(null);
   const [chartData, setChartData] = useState<ChartConfiguration["data"] | null>(
@@ -142,23 +131,21 @@ function Example() {
   return (
     <>
       {/* line chart */}
-      <h1 className="w-[110px] mx-auto mt-10 text-xl font-semibold capitalize">
-        Weekly Report
-      </h1>
-      <div className="w-[1100px] h-screen flex flex-col items-center mx-auto my-auto">
+      <h1 className="text-xl font-semibold text-center mt-6">Weekly Report</h1>
+      <div className="flex flex-col items-center px-4 py-6">
         <div className="flex space-x-4 mb-4">
           <button
             onClick={handlePreviousWeek}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
           >
             <IconArrowBadgeLeft />
           </button>
           <button
             onClick={handleNextWeek}
-            className={`bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 ${
+            className={`px-4 py-2 rounded-lg hover:bg-blue-600 ${
               currentWeek >= startOfWeek(new Date())
-                ? "bg-gray-400 cursor-not-allowed hover:bg-gray-400"
-                : "bg-blue-400 "
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-500 text-white"
             }`}
             disabled={currentWeek >= startOfWeek(new Date())}
           >
@@ -166,13 +153,13 @@ function Example() {
           </button>
         </div>
         <div className="text-lg font-medium mb-4">{`Week of ${weekRange}`}</div>
-        <div className="border border-gray-400 pt-0 rounded-xl w-full h-fit my-auto shadow-xl">
+        <div className="w-full max-w-full md:max-w-[800px] lg:max-w-[1000px] h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] border border-gray-300 pt-4 rounded-xl shadow-lg relative">
           {loading ? (
-            <div className="flex justify-center items-center h-screen">
+            <div className="flex justify-center items-center h-full">
               <TailSpin height="80" width="80" color="black" />
             </div>
           ) : (
-            <canvas ref={chartRef} id="myChart"></canvas>
+            <canvas ref={chartRef} id="myChart" className="h-full w-full" />
           )}
         </div>
       </div>

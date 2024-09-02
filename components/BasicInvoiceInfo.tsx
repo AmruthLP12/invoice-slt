@@ -44,36 +44,42 @@ const BasicInvoiceInfo: React.FC<BasicInvoiceInfoProps> = ({ invoices, filterDel
         </TableRow>
       </TableHeader>
       <TableBody>
-        {filteredInvoices.map((invoice, index) => (
-          <TableRow key={index} className="border border-gray-200">
-            <TableCell className="p-2">
-              <Link href={`/invoices/${invoice.cardNumber}`}>
-                <p className="text-blue-500 hover:underline">{invoice.cardNumber}</p>
-              </Link>
-            </TableCell>
-            <TableCell className="p-2">{invoice.phoneNumber}</TableCell>
-            <TableCell className="p-2">{invoice.today.toLocaleDateString()}</TableCell>
-            <TableCell className="p-2">{invoice.selectedDate.toLocaleDateString()}</TableCell>
-            <TableCell className="p-2">₹{invoice.totalAmount}</TableCell>
-            <TableCell className="p-2">₹{invoice.advance}</TableCell>
-            <TableCell className="p-2">₹{invoice.remainingAmount}</TableCell>
-            <TableCell className="p-2">
-              {invoice.isDelivered ? (
-                <Button
-                  onClick={() => invoice.onMarkAsDelivered?.(invoice.cardNumber)}
-                  className="bg-red-500 text-white hover:bg-red-600"
-                >
-                  Mark as Undelivered
-                </Button>
-              ) : <Button
-              onClick={() => invoice.onMarkAsDelivered?.(invoice.cardNumber)}
-              className="bg-red-500 text-white hover:bg-red-600"
-            >
-              Mark as Delivered
-            </Button>}
-            </TableCell>
-          </TableRow>
-        ))}
+        {filteredInvoices.map((invoice, index) => {
+          const rowClasses = invoice.isDelivered ? "line-through text-gray-500" : "";
+
+          return (
+            <TableRow key={index} className={`border border-gray-200 ${rowClasses}`}>
+              <TableCell className={`p-2 ${rowClasses}`}>
+                <Link href={`/invoices/${invoice.cardNumber}`}>
+                  <p className={`!text-blue-500 hover:underline ${rowClasses}`}>{invoice.cardNumber}</p>
+                </Link>
+              </TableCell>
+              <TableCell className={`p-2 ${rowClasses}`}>{invoice.phoneNumber}</TableCell>
+              <TableCell className={`p-2 ${rowClasses}`}>{invoice.today.toLocaleDateString()}</TableCell>
+              <TableCell className={`p-2 ${rowClasses}`}>{invoice.selectedDate.toLocaleDateString()}</TableCell>
+              <TableCell className={`p-2 ${rowClasses}`}>₹{invoice.totalAmount}</TableCell>
+              <TableCell className={`p-2 ${rowClasses}`}>₹{invoice.advance}</TableCell>
+              <TableCell className={`p-2 ${rowClasses}`}>₹{invoice.remainingAmount}</TableCell>
+              <TableCell className="p-2">
+                {invoice.isDelivered ? (
+                  <Button
+                    onClick={() => invoice.onMarkAsDelivered?.(invoice.cardNumber)}
+                    className="bg-red-500 text-white hover:bg-red-600"
+                  >
+                    Mark as Undelivered
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => invoice.onMarkAsDelivered?.(invoice.cardNumber)}
+                    className="bg-blue-500 text-white hover:bg-blue-600"
+                  >
+                    Mark as Delivered
+                  </Button>
+                )}
+              </TableCell>
+            </TableRow>
+          );
+        })}
       </TableBody>
     </Table>
   );
