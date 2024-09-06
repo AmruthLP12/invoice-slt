@@ -9,7 +9,11 @@ import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/date-picker";
 import { RefreshCcw } from "lucide-react"; // Import the reset icon
 import { Button } from "@/components/ui/button";
-import { fetchInvoices, markInvoiceAsDelivered } from "@/services/service"; // Import the service functions
+import {
+  deleteInvoice,
+  fetchInvoices,
+  markInvoiceAsDelivered,
+} from "@/services/service"; // Import the service functions
 
 interface Invoice {
   _id: string;
@@ -83,6 +87,13 @@ const InvoicesPage: React.FC = () => {
     );
   };
 
+  const handleDeleteInvoice = async (invoiceId: string) => {
+    await deleteInvoice(invoiceId); // Use the service function to delete the invoice
+    setInvoices((prevInvoices) =>
+      prevInvoices.filter((invoice) => invoice._id !== invoiceId)
+    );
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -141,6 +152,7 @@ const InvoicesPage: React.FC = () => {
             ...invoice,
             onMarkAsDelivered: (cardNumber: string) =>
               handleMarkAsDelivered(invoice._id),
+            onDelete: (mongoId: string) => handleDeleteInvoice(mongoId),
           }))}
           filterDelivered={false} // Only undelivered invoices
         />
