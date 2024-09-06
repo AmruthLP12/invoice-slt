@@ -22,7 +22,7 @@ const DatePickers: React.FC<DatePickersProps> = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
       <div>
-        <label className="block mb-1">Today's Date (editable):</label>
+        <label className="block mb-1">Today&apos;s Date (editable):</label>
         <DatePicker
           date={today}
           onDateChange={(date) => {

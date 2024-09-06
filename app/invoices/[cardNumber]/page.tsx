@@ -1,11 +1,5 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import axios from "axios";
-import { TailSpin } from "react-loader-spinner";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import {
   Table,
   TableBody,
@@ -14,6 +8,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { fetchInvoiceDetails } from "@/services/service";
+import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { TailSpin } from "react-loader-spinner";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface Invoice {
   _id: string;
