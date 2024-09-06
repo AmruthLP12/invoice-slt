@@ -1,3 +1,4 @@
+// components/InvoiceTable.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -24,8 +25,9 @@ const InvoiceTable: React.FC = () => {
   const [isDateValid, setIsDateValid] = useState<boolean>(true);
   const [isCardNumberValid, setIsCardNumberValid] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [today, setToday] = useState<Date>(new Date());
 
-  const today = new Date();
+  const todayDate = new Date();
 
   const handleChange = (
     index: number,
@@ -67,6 +69,7 @@ const InvoiceTable: React.FC = () => {
     setCustomerName("");
     setPhoneNumber("");
     setCardNumber("");
+    setToday(todayDate);
   };
 
   const handleSubmit = async () => {
@@ -103,7 +106,7 @@ const InvoiceTable: React.FC = () => {
       selectedDate,
       advance,
       rows,
-      today,
+      today, // Use the updated today date
     };
 
     try {
@@ -139,7 +142,7 @@ const InvoiceTable: React.FC = () => {
       )}
 
       <div
-        className={`p-6 bg-white shadow-md rounded-lg ₹{
+        className={`p-6 bg-white shadow-md rounded-lg ${
           isLoading ? "opacity-50 pointer-events-none" : ""
         }`}
       >
@@ -160,6 +163,7 @@ const InvoiceTable: React.FC = () => {
         {/* Date Pickers */}
         <DatePickers
           today={today}
+          setToday={setToday}
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
           isDateValid={isDateValid}
@@ -202,7 +206,7 @@ const InvoiceTable: React.FC = () => {
           <Button
             onClick={handleSubmit}
             disabled={isLoading}
-            className={`bg-green-700 text-white hover:text-gray-300 hover:bg-green-600 ₹{
+            className={`bg-green-700 text-white hover:text-gray-300 hover:bg-green-600 ${
               isLoading ? "cursor-not-allowed opacity-50" : ""
             }`}
           >

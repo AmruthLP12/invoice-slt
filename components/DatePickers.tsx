@@ -4,6 +4,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 
 interface DatePickersProps {
   today: Date;
+  setToday: React.Dispatch<React.SetStateAction<Date>>;
   selectedDate: Date | undefined;
   setSelectedDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
   isDateValid: boolean;
@@ -12,6 +13,7 @@ interface DatePickersProps {
 
 const DatePickers: React.FC<DatePickersProps> = ({
   today,
+  setToday,
   selectedDate,
   setSelectedDate,
   isDateValid,
@@ -20,9 +22,15 @@ const DatePickers: React.FC<DatePickersProps> = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
       <div>
-        <label className="block mb-1">Today&apos;s Date:</label>
-        <DatePicker date={today} onDateChange={() => {}} />{" "}
-        {/* Disabled Date Picker */}
+        <label className="block mb-1">Today's Date (editable):</label>
+        <DatePicker
+          date={today}
+          onDateChange={(date) => {
+            if (date) {
+              setToday(date); // Ensure date is defined before setting
+            }
+          }}
+        />
       </div>
       <div>
         <label className="block mb-1">
@@ -31,8 +39,10 @@ const DatePickers: React.FC<DatePickersProps> = ({
         <DatePicker
           date={selectedDate}
           onDateChange={(date) => {
-            setSelectedDate(date);
-            setIsDateValid(true);
+            if (date) {
+              setSelectedDate(date);
+              setIsDateValid(true);
+            }
           }}
         />
         {!isDateValid && (
