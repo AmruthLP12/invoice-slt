@@ -106,3 +106,45 @@ html, body {
 .overflow-y-auto {
   overflow-y: auto;
 }
+
+@media print {
+  .print\\:hidden {
+    display: none !important;
+  }
+}
+
+/* Print-specific styles */
+@media print {
+  body {
+    font-size: 12px; /* Reduce overall font size for printing */
+  }
+
+  .print-hidden {
+    display: none !important; /* Hide elements not needed in print */
+  }
+
+  .p-6 {
+    padding: 8px !important; /* Reduce padding for printing */
+  }
+
+  .text-xl {
+    font-size: 16px !important; /* Adjust header size */
+  }
+
+  .text-lg {
+    font-size: 14px !important; /* Adjust text size */
+  }
+
+  .mt-4, .mb-4 {
+    margin: 8px 0 !important; /* Reduce margin for printing */
+  }
+
+  .w-full {
+    width: 100% !important; /* Ensure full width for printing */
+  }
+
+  .border {
+    border-width: 1px !important; /* Make borders thinner for print */
+  }
+}
+

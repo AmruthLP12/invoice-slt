@@ -1,7 +1,6 @@
-// components/InvoiceTable.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { InvoiceRow } from "@/components/types"; // Import InvoiceRow type
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,9 +10,10 @@ import "react-toastify/dist/ReactToastify.css";
 import CustomerDetails from "./CustomerDetails";
 import DatePickers from "./DatePickers";
 import InvoiceTableBody from "./InvoiceTableBody";
-import axios from "axios";
 import { TailSpin } from "react-loader-spinner";
 import { submitInvoice } from "@/services/service";
+import { useReactToPrint } from "react-to-print";
+import { IconPrinter } from "@tabler/icons-react"; // Import printer icon
 
 const InvoiceTable: React.FC = () => {
   const [rows, setRows] = useState<InvoiceRow[]>(fixedRows);
@@ -28,6 +28,7 @@ const InvoiceTable: React.FC = () => {
   const [today, setToday] = useState<Date>(new Date());
 
   const todayDate = new Date();
+  const componentRef = useRef<HTMLDivElement>(null); // Reference for the print content
 
   const handleChange = (
     index: number,
@@ -130,6 +131,12 @@ const InvoiceTable: React.FC = () => {
     event.preventDefault(); // Prevent the default scroll behavior
   };
 
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: "Invoice Details",
+    onAfterPrint: () => toast.success("Print successful!"),
+  });
+
   return (
     <>
       <ToastContainer theme="light" position="bottom-right" />
@@ -145,6 +152,7 @@ const InvoiceTable: React.FC = () => {
         className={`p-6 bg-white shadow-md rounded-lg ${
           isLoading ? "opacity-50 pointer-events-none" : ""
         }`}
+        ref={componentRef} // Reference the component to be printed
       >
         <h2 className="text-xl font-semibold mb-4">Invoice Generator</h2>
 
@@ -199,7 +207,7 @@ const InvoiceTable: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-4 flex gap-4">
+        <div className="mt-4 flex gap-4 print:hidden">
           <Button onClick={handleReset} variant="destructive">
             Reset
           </Button>
@@ -211,6 +219,12 @@ const InvoiceTable: React.FC = () => {
             }`}
           >
             Submit
+          </Button>
+          <Button
+            onClick={handlePrint}
+            className="text-blue-500 hover:text-blue-700 print:hidden"
+          >
+            <IconPrinter size={24} />
           </Button>
         </div>
       </div>
