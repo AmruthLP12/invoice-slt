@@ -7,13 +7,13 @@ import { TailSpin } from "react-loader-spinner";
 import BasicInvoiceInfo from "@/components/BasicInvoiceInfo";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/date-picker";
-import { RefreshCcw } from "lucide-react"; // Import the reset icon
+import { RefreshCcw } from "lucide-react"; 
 import { Button } from "@/components/ui/button";
 import {
   deleteInvoice,
   fetchInvoices,
   markInvoiceAsDelivered,
-} from "@/services/service"; // Import the service functions
+} from "@/services/service"; 
 
 interface Invoice {
   _id: string;
