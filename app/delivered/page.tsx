@@ -124,6 +124,12 @@ const DeliveredPage: React.FC = () => {
       <ToastContainer theme="light" position="bottom-right" />
       <div className="p-6 bg-white shadow-md rounded-lg">
         <h2 className="text-xl font-semibold mb-4">Delivered Invoices</h2>
+
+        {/* Display the count of filtered invoices */}
+        <p className="mb-4">
+          Showing {filteredInvoices.length} invoice(s)
+        </p>
+
         <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row gap-4 mb-4">
           <div className="flex-1">
             <Input

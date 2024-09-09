@@ -7,13 +7,13 @@ import { TailSpin } from "react-loader-spinner";
 import BasicInvoiceInfo from "@/components/BasicInvoiceInfo";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/date-picker";
-import { RefreshCcw } from "lucide-react"; 
+import { RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   deleteInvoice,
   fetchInvoices,
   markInvoiceAsDelivered,
-} from "@/services/service"; 
+} from "@/services/service";
 
 interface Invoice {
   _id: string;
@@ -124,6 +124,9 @@ const InvoicesPage: React.FC = () => {
       <ToastContainer theme="light" position="bottom-right" />
       <div className="p-6 bg-white shadow-md rounded-lg">
         <h2 className="text-xl font-semibold mb-4">Invoices</h2>
+
+        <p className="mb-4">Showing {filteredInvoices.length} invoice(s)</p>
+
         <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row gap-4 mb-4">
           <div className="flex-1">
             <Input

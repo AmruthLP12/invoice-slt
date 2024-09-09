@@ -77,7 +77,7 @@ export const markInvoiceAsUnDelivered = async (invoiceId: string) => {
 export const deleteInvoice = async (invoiceId: string) => {
   try {
     await axios.delete(`/api?mongoId=${invoiceId}`);
-    toast.success("Invoice deleted successfully.");
+    toast.warning("Invoice deleted successfully.");
   } catch (error) {
     toast.error("Failed to delete invoice.");
     throw error;
