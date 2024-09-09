@@ -5,29 +5,13 @@ import { Chart, ChartConfiguration } from "chart.js";
 import { endOfWeek, format, startOfWeek, subWeeks } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import { TailSpin } from "react-loader-spinner";
-
-interface Invoice {
-  _id: string;
-  customerName: string;
-  phoneNumber: string;
-  cardNumber: string;
-  selectedDate: string;
-  advance: number;
-  today: string;
-  isDelivered: boolean;
-  rows: {
-    description: string;
-    qty: number;
-    price: number;
-    total: number;
-  }[];
-  totalAmount?: number;
-  remainingAmount?: number;
-}
+import { labels } from "@/data";
 
 function ChartLine() {
   const chartRef = useRef<HTMLCanvasElement | null>(null);
-  const [chartData, setChartData] = useState<ChartConfiguration["data"] | null>(null);
+  const [chartData, setChartData] = useState<ChartConfiguration["data"] | null>(
+    null
+  );
   const [loading, setLoading] = useState<boolean>(true);
   const [currentWeek, setCurrentWeek] = useState<Date>(startOfWeek(new Date()));
   const [weekRange, setWeekRange] = useState<string>("");
@@ -39,15 +23,15 @@ function ChartLine() {
       const invoices = await fetchInvoices();
 
       // Process invoices to get the data for the chart
-      const labels = [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-      ];
+      // const labels = [
+      //   "Sunday",
+      //   "Monday",
+      //   "Tuesday",
+      //   "Wednesday",
+      //   "Thursday",
+      //   "Friday",
+      //   "Saturday",
+      // ];
       const receivedIn = new Array(7).fill(0);
       const delivered = new Array(7).fill(0);
       let receivedCount = 0;
@@ -59,8 +43,16 @@ function ChartLine() {
           const day = invoiceDate.getDay();
           receivedIn[day]++;
           receivedCount++;
+        }
 
-          if (invoice.isDelivered) {
+        // Check if deliveredAt is available and within the current week range
+        if (invoice.isDelivered && invoice.deliveredAt) {
+          const deliveredDate = new Date(invoice.deliveredAt);
+          if (
+            deliveredDate >= weekStart &&
+            deliveredDate <= endOfWeek(weekStart)
+          ) {
+            const day = deliveredDate.getDay();
             delivered[day]++;
             deliveredCount++;
           }

@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 
 interface BasicInvoiceInfoProps {
   invoices: {
@@ -83,10 +84,10 @@ const BasicInvoiceInfo: React.FC<BasicInvoiceInfoProps> = ({
                 {invoice.phoneNumber}
               </TableCell>
               <TableCell className={`p-2 ${rowClasses}`}>
-                {invoice.today.toLocaleDateString()}
+                {format(invoice.today, 'dd/MM/yyyy')}
               </TableCell>
               <TableCell className={`p-2 ${rowClasses}`}>
-                {invoice.selectedDate.toLocaleDateString()}
+              {format(invoice.selectedDate, 'dd/MM/yyyy')}
               </TableCell>
               <TableCell className={`p-2 ${rowClasses}`}>
                 ₹{invoice.totalAmount}
