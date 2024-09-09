@@ -220,12 +220,12 @@ const InvoiceTable: React.FC = () => {
           >
             Submit
           </Button>
-          <Button
+          {/* <Button
             onClick={handlePrint}
             className="text-blue-500 hover:text-blue-700 print:hidden"
           >
             <IconPrinter size={24} />
-          </Button>
+          </Button> */}
         </div>
       </div>
     </>

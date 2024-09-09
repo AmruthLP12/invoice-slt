@@ -6,6 +6,8 @@ interface CustomModalProps {
   onClose: () => void;
   onConfirm: () => void;
   children?: React.ReactNode;
+  cancelColor?: string;
+  confirmColor?: string;
 }
 
 const CustomModal: React.FC<CustomModalProps> = ({
@@ -13,11 +15,12 @@ const CustomModal: React.FC<CustomModalProps> = ({
   onClose,
   onConfirm,
   children,
+  cancelColor = "bg-gray-300 text-black hover:bg-gray-400",
+  confirmColor = "bg-red-500 text-white hover:bg-red-600",
 }) => {
   if (!isOpen) return null;
 
   const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    // If the clicked element is the backdrop (outside the modal content), close the modal
     if (event.target === event.currentTarget) {
       onClose();
     }
@@ -31,16 +34,10 @@ const CustomModal: React.FC<CustomModalProps> = ({
       <div className="bg-white p-6 rounded shadow-lg w-11/12 max-w-md">
         {children}
         <div className="mt-4 flex justify-end gap-4">
-          <Button
-            onClick={onClose}
-            className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
-          >
+          <Button onClick={onClose} className={`px-4 py-2 rounded ${cancelColor}`}>
             Cancel
           </Button>
-          <Button
-            onClick={onConfirm}
-            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-          >
+          <Button onClick={onConfirm} className={`px-4 py-2 rounded ${confirmColor}`}>
             Confirm
           </Button>
         </div>
