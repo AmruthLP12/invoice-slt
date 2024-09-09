@@ -1,12 +1,10 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { Chart, ChartConfiguration } from "chart.js";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { TailSpin } from "react-loader-spinner";
-import { format, subWeeks, startOfWeek, endOfWeek } from "date-fns";
-import { IconArrowBadgeLeft, IconArrowBadgeRight } from "@tabler/icons-react";
 import { fetchInvoices } from "@/services/service";
+import { IconArrowBadgeLeft, IconArrowBadgeRight } from "@tabler/icons-react";
+import { Chart, ChartConfiguration } from "chart.js";
+import { endOfWeek, format, startOfWeek, subWeeks } from "date-fns";
+import { useEffect, useRef, useState } from "react";
+import { TailSpin } from "react-loader-spinner";
 
 interface Invoice {
   _id: string;
@@ -27,14 +25,14 @@ interface Invoice {
   remainingAmount?: number;
 }
 
-function Example() {
+function ChartLine() {
   const chartRef = useRef<HTMLCanvasElement | null>(null);
-  const [chartData, setChartData] = useState<ChartConfiguration["data"] | null>(
-    null
-  );
+  const [chartData, setChartData] = useState<ChartConfiguration["data"] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentWeek, setCurrentWeek] = useState<Date>(startOfWeek(new Date()));
   const [weekRange, setWeekRange] = useState<string>("");
+  const [totalReceived, setTotalReceived] = useState<number>(0);
+  const [totalDelivered, setTotalDelivered] = useState<number>(0);
 
   const fetchAndSetInvoices = async (weekStart: Date) => {
     try {
@@ -52,18 +50,25 @@ function Example() {
       ];
       const receivedIn = new Array(7).fill(0);
       const delivered = new Array(7).fill(0);
+      let receivedCount = 0;
+      let deliveredCount = 0;
 
       invoices.forEach((invoice) => {
         const invoiceDate = new Date(invoice.today);
         if (invoiceDate >= weekStart && invoiceDate <= endOfWeek(weekStart)) {
           const day = invoiceDate.getDay();
           receivedIn[day]++;
+          receivedCount++;
 
           if (invoice.isDelivered) {
             delivered[day]++;
+            deliveredCount++;
           }
         }
       });
+
+      setTotalReceived(receivedCount);
+      setTotalDelivered(deliveredCount);
 
       setChartData({
         labels,
@@ -152,7 +157,14 @@ function Example() {
             <IconArrowBadgeRight />
           </button>
         </div>
-        <div className="text-lg font-medium mb-4">{`Week of ${weekRange}`}</div>
+        <div className="flex flex-row items-center gap-16">
+          <div className="text-lg font-medium mb-4">{`Week of ${weekRange}`}</div>
+          {/* Display total counts below the chart */}
+          <div className="mt-4 text-center">
+            <p className="text-lg font-semibold">{`Total Received: ${totalReceived}`}</p>
+            <p className="text-lg font-semibold">{`Total Delivered: ${totalDelivered}`}</p>
+          </div>
+        </div>
         <div className="w-full max-w-full md:max-w-[800px] lg:max-w-[1000px] h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] border border-gray-300 pt-4 rounded-xl shadow-lg relative">
           {loading ? (
             <div className="flex justify-center items-center h-full">
@@ -167,4 +179,4 @@ function Example() {
   );
 }
 
-export default Example;
+export default ChartLine;

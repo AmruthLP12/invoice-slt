@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
       today,
     } = await request.json();
 
-    await InvoiceModel.create({
+    const newInvoice = await InvoiceModel.create({
       customerName,
       phoneNumber,
       cardNumber,
@@ -83,8 +83,9 @@ export async function POST(request: NextRequest) {
       today,
     });
 
-    return NextResponse.json({ msg: "Invoice Created" });
+    return NextResponse.json({ msg: "Invoice Created", invoice: newInvoice });
   } catch (error) {
+    console.error("Error creating invoice:", error);
     return NextResponse.json(
       { error: "Failed to create invoice" },
       { status: 500 }
@@ -111,7 +112,6 @@ export async function DELETE(request: NextRequest) {
   }
 }
 
-
 export async function PUT(request: NextRequest) {
   await loadDb();
 
@@ -122,15 +122,20 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ msg: "Invalid request" }, { status: 400 });
   }
 
+  // Set update data based on the action
   const updateData =
-    action === "deliver" ? { isDelivered: true } : { isDelivered: false };
+    action === "deliver"
+      ? { isDelivered: true, deliveredAt: new Date() } // Add deliveredAt date when delivered
+      : { isDelivered: false, deliveredAt: null }; // Remove deliveredAt when undelivered
 
   try {
     await InvoiceModel.findByIdAndUpdate(mongoId, {
       $set: updateData,
     });
     const message =
-      action === "deliver" ? "Invoice Marked as Delivered" : "Invoice Marked as Undelivered";
+      action === "deliver"
+        ? "Invoice Marked as Delivered"
+        : "Invoice Marked as Undelivered";
     return NextResponse.json({ msg: message });
   } catch (error) {
     return NextResponse.json(
@@ -139,4 +144,3 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
-

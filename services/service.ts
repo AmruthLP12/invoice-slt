@@ -10,6 +10,7 @@ interface Invoice {
   advance: number;
   today: string;
   isDelivered: boolean;
+  deliveredAt?:string;
   rows: {
     description: string;
     qty: number;

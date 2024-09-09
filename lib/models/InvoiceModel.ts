@@ -18,6 +18,7 @@ export interface InvoiceDocument extends Document {
   rows: InvoiceRow[];
   today: Date;
   isDelivered: Boolean;
+  deliveredAt: Date;
 }
 
 // Schema for individual invoice row
@@ -27,17 +28,14 @@ const InvoiceRowSchema = new Schema<InvoiceRow>({
   },
   qty: {
     type: Number,
-
     min: 0,
   },
   price: {
     type: Number,
-
     min: 0,
   },
   total: {
     type: Number,
-
     min: 0,
   },
 });
@@ -59,7 +57,6 @@ const InvoiceSchema = new Schema<InvoiceDocument>(
     },
     advance: {
       type: Number,
-
       min: 0,
     },
     rows: {
@@ -69,8 +66,12 @@ const InvoiceSchema = new Schema<InvoiceDocument>(
       type: Date,
     },
     isDelivered: {
-      type:Boolean,
-      default:false
+      type: Boolean,
+      default: false,
+    },
+    deliveredAt: {
+      type: Date,
+      default: null,
     },
   },
 
