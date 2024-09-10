@@ -119,7 +119,7 @@ const BasicInvoiceInfo: React.FC<BasicInvoiceInfoProps> = ({
         <TableBody>
           {filteredInvoices.map((invoice, index) => {
             const rowClasses = invoice.isDelivered
-              ? invoiceStyles.lineThroughText
+              ? "line-through text-gray-500"
               : "";
 
             return (
