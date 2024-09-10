@@ -85,7 +85,7 @@ const BasicInvoiceInfo: React.FC<BasicInvoiceInfoProps> = ({
       <Table className="w-full border-collapse border border-gray-200">
         <TableHeader>
           <TableRow>
-            <TableCell className={`${invoiceStyles.tableCellHead}`}>
+            <TableCell className={`${invoiceStyles.tableCellHead} `}>
               Card Number
             </TableCell>
             <TableCell className={`${invoiceStyles.tableCellHead}`}>
@@ -99,7 +99,7 @@ const BasicInvoiceInfo: React.FC<BasicInvoiceInfoProps> = ({
             </TableCell>
             {filterDelivered && (
               <TableCell className={`${invoiceStyles.tableCellHead}`}>
-                Delivered At
+                Delivered Date
               </TableCell>
             )}
             <TableCell className={`${invoiceStyles.tableCellHead}`}>
