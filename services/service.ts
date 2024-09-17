@@ -1,44 +1,44 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 
-interface Invoice {
-  _id: string;
-  customerName: string;
-  phoneNumber: string;
-  cardNumber: string;
-  selectedDate: string;
-  advance: number;
-  today: string;
-  isDelivered: boolean;
-  deliveredAt?:string;
-  rows: {
-    description: string;
-    qty: number;
-    price: number;
-    total: number;
-  }[];
-  totalAmount?: number;
-  remainingAmount?: number;
-}
+// interface Invoice {
+//   _id: string;
+//   customerName: string;
+//   phoneNumber: string;
+//   cardNumber: string;
+//   selectedDate: string;
+//   advance: number;
+//   today: string;
+//   isDelivered: boolean;
+//   deliveredAt?:string;
+//   rows: {
+//     description: string;
+//     qty: number;
+//     price: number;
+//     total: number;
+//   }[];
+//   totalAmount?: number;
+//   remainingAmount?: number;
+// }
 
-// / Interface for InvoiceRow (from your components/types)
-export interface InvoiceRow {
-  description: string;
-  qty: number;
-  price: number;
-  total: number;
-}
+// // / Interface for InvoiceRow (from your components/types)
+// export interface InvoiceRow {
+//   description: string;
+//   qty: number;
+//   price: number;
+//   total: number;
+// }
 
 // Interface for the Invoice data
-export interface CreateInvoice {
-  customerName: string;
-  phoneNumber: string;
-  cardNumber: string;
-  selectedDate: Date | undefined;
-  advance: number;
-  rows: InvoiceRow[];
-  today: Date;
-}
+// export interface CreateInvoice {
+//   customerName: string;
+//   phoneNumber: string;
+//   cardNumber: string;
+//   selectedDate: Date | undefined;
+//   advance: number;
+//   rows: InvoiceRow[];
+//   today: Date;
+// }
 
 // Fetch all invoices
 export const fetchInvoices = async (): Promise<Invoice[]> => {
@@ -47,6 +47,26 @@ export const fetchInvoices = async (): Promise<Invoice[]> => {
     return response.data.reverse(); // Assuming you want the latest invoices first
   } catch (error) {
     toast.error("Failed to fetch invoices.");
+    throw error;
+  }
+};
+
+// fetch delivered invoices
+export const fetchDeliveredInvoices = async (): Promise<Invoice[]> => {
+  try {
+    const response = await axios.get("/api"); // Fetch all invoices from your API
+    const invoices = response.data;
+
+    // Filter to only return invoices with isDelivered: true and sort by deliveredAt (descending)
+    const deliveredInvoices = invoices
+      .filter((invoice: Invoice) => invoice.isDelivered && invoice.deliveredAt) // Ensure deliveredAt exists
+      .sort((a: Invoice, b: Invoice) => 
+        new Date(b.deliveredAt!).getTime() - new Date(a.deliveredAt!).getTime()
+      ); // Sort by deliveredAt in reverse order
+
+    return deliveredInvoices;
+  } catch (error) {
+    toast.error("Failed to fetch delivered invoices.");
     throw error;
   }
 };

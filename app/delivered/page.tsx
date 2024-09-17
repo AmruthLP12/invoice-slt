@@ -1,38 +1,20 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { TailSpin } from "react-loader-spinner";
 import BasicInvoiceInfo from "@/components/BasicInvoiceInfo";
-import { Input } from "@/components/ui/input";
-import { DatePicker } from "@/components/ui/date-picker";
-import { RefreshCcw } from "lucide-react"; // Import the reset icon
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
+import { Input } from "@/components/ui/input";
 import {
   deleteInvoice,
-  fetchInvoices,
-  markInvoiceAsUnDelivered,
+  fetchDeliveredInvoices,
+  markInvoiceAsUnDelivered
 } from "@/services/service"; // Import the service functions
-
-interface Invoice {
-  _id: string;
-  customerName: string;
-  phoneNumber: string;
-  cardNumber: string;
-  selectedDate: string;
-  advance: number;
-  today: string;
-  isDelivered: boolean;
-  rows: {
-    description: string;
-    qty: number;
-    price: number;
-    total: number;
-  }[];
-  totalAmount?: number;
-  remainingAmount?: number;
-}
+import { RefreshCcw } from "lucide-react"; // Import the reset icon
+import React, { useEffect, useState } from "react";
+import { TailSpin } from "react-loader-spinner";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+// import { Invoice } from "@/types";
 
 const DeliveredPage: React.FC = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -44,7 +26,7 @@ const DeliveredPage: React.FC = () => {
   useEffect(() => {
     const loadInvoices = async () => {
       try {
-        const data = await fetchInvoices(); // Use the service function to fetch invoices
+        const data = await fetchDeliveredInvoices(); // Use the service function to fetch invoices
         setInvoices(data);
         setFilteredInvoices(data);
         setIsLoading(false);
@@ -126,9 +108,7 @@ const DeliveredPage: React.FC = () => {
         <h2 className="text-xl font-semibold mb-4">Delivered Invoices</h2>
 
         {/* Display the count of filtered invoices */}
-        <p className="mb-4">
-          Showing {filteredInvoices.length} invoice(s)
-        </p>
+        <p className="mb-4">Showing {filteredInvoices.length} invoice(s)</p>
 
         <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row gap-4 mb-4">
           <div className="flex-1">

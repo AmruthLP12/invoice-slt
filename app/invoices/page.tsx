@@ -15,24 +15,6 @@ import {
   markInvoiceAsDelivered,
 } from "@/services/service";
 
-interface Invoice {
-  _id: string;
-  customerName: string;
-  phoneNumber: string;
-  cardNumber: string;
-  selectedDate: string;
-  advance: number;
-  today: string;
-  isDelivered: boolean;
-  rows: {
-    description: string;
-    qty: number;
-    price: number;
-    total: number;
-  }[];
-  totalAmount?: number;
-  remainingAmount?: number;
-}
 
 const InvoicesPage: React.FC = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
