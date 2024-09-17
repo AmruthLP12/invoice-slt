@@ -11,7 +11,7 @@ import { fetchInvoiceDetails } from "@/services/service";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState, useRef } from "react";
 import { TailSpin } from "react-loader-spinner";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { IconPrinter } from "@tabler/icons-react";
 import { useReactToPrint } from "react-to-print";
 import { Button } from "@/components/ui/button";
@@ -58,7 +58,9 @@ const InvoiceDetails: React.FC = () => {
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
     documentTitle: "Invoice Details",
-    onAfterPrint: () => alert("Print successful!"),
+    onAfterPrint: () => {
+      toast.success("Print successful!");
+    },
   });
 
   if (isLoading) {
@@ -88,26 +90,35 @@ const InvoiceDetails: React.FC = () => {
         ref={componentRef}
       >
         {/* Header Section */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold">Sumithra Ladies Tailors</h1>
+          <p className="text-lg">
+            H C P Complex, Hesaraghatta, Bangalore - 560088
+          </p>
+          <p className="text-lg">Phone: 9538733164, 9620143033</p>
+        </div>
+
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold">Invoice Details</h2>
           <Button
             onClick={handlePrint}
-            className="text-blue-500 hover:text-blue-700 print:hidden"
+            className="flex items-center space-x-2 bg-blue-100 text-blue-600 hover:bg-blue-200 focus:ring focus:ring-blue-300 px-4 py-2 rounded-md print:hidden"
           >
-            <IconPrinter size={24} />
+            <IconPrinter size={20} className="text-blue-600" />
+            <span>Print</span>
           </Button>
         </div>
 
         {/* Customer Details Section */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-3 gap-4 mb-6 items-center">
+          <p className="text-lg font-semibold">
+            <strong>Card Number:</strong> {invoice.cardNumber}
+          </p>
           <p className="text-lg font-semibold">
             <strong>Customer Name:</strong> {invoice.customerName}
           </p>
           <p className="text-lg font-semibold">
             <strong>Phone Number:</strong> {invoice.phoneNumber}
-          </p>
-          <p className="text-lg font-semibold">
-            <strong>Card Number:</strong> {invoice.cardNumber}
           </p>
           <p className="text-lg font-semibold">
             <strong>Received Created:</strong>{" "}
@@ -140,7 +151,7 @@ const InvoiceDetails: React.FC = () => {
           </TableHeader>
           <TableBody>
             {invoice.rows
-              .filter((row) => row.qty > 0) // Filter out rows with quantity 0
+              .filter((row) => row.qty > 0)
               .map((row, index) => (
                 <TableRow key={index}>
                   <TableCell className="border border-gray-300 p-2">

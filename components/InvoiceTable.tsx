@@ -1,21 +1,24 @@
 "use client";
 
-import React, { useState, useRef } from "react";
 import { InvoiceRow } from "@/components/types"; // Import InvoiceRow type
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { fixedRows, tableHeaders } from "@/data";
+import { submitInvoice } from "@/services/service";
+import { IconDeviceFloppy, IconPrinter } from "@tabler/icons-react";
+import { RefreshCcw } from "lucide-react";
+import { useRouter } from "next/navigation";
+import React, { useRef, useState } from "react";
+import { TailSpin } from "react-loader-spinner";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CustomerDetails from "./CustomerDetails";
 import DatePickers from "./DatePickers";
 import InvoiceTableBody from "./InvoiceTableBody";
-import { TailSpin } from "react-loader-spinner";
-import { submitInvoice } from "@/services/service";
-import { useReactToPrint } from "react-to-print";
-import { IconPrinter } from "@tabler/icons-react"; // Import printer icon
 
 const InvoiceTable: React.FC = () => {
+  const router = useRouter();
+
   const [rows, setRows] = useState<InvoiceRow[]>(fixedRows);
   const [advance, setAdvance] = useState<number>(0);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
@@ -26,6 +29,7 @@ const InvoiceTable: React.FC = () => {
   const [isCardNumberValid, setIsCardNumberValid] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [today, setToday] = useState<Date>(new Date());
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const todayDate = new Date();
   const componentRef = useRef<HTMLDivElement>(null); // Reference for the print content
@@ -114,11 +118,34 @@ const InvoiceTable: React.FC = () => {
       const success = await submitInvoice(invoice);
       if (success) {
         handleReset(); // Reset form after successful submission
+        return cardNumber; // Return the cardNumber for further use
       }
     } catch (error) {
       // Handle the error if needed
     } finally {
       setIsLoading(false); // Set loading state to false after submission completes
+    }
+  };
+
+  const handlePrintResult = async () => {
+    try {
+      setIsSubmitting(true);
+      const savedCardNumber = await handleSubmit(); // Save invoice and get the cardNumber
+      if (savedCardNumber) {
+        // Show success toast notification
+        // toast.success("Invoice saved successfully!");
+
+        // Wait for 2 seconds before redirecting (you can adjust the time as needed)
+        setTimeout(() => {
+          // Navigate to the print page using the saved cardNumber
+          router.push(`/invoices/${savedCardNumber}`);
+        }, 5000); // 2000 milliseconds = 2 seconds
+      }
+    } catch (error) {
+      console.error("Error saving invoice or navigating to print page:", error);
+      toast.error("An error occurred while saving the invoice.");
+    } finally {
+      setIsSubmitting(false); // Reset submitting state after printing completes
     }
   };
 
@@ -131,22 +158,33 @@ const InvoiceTable: React.FC = () => {
     event.preventDefault(); // Prevent the default scroll behavior
   };
 
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
-    documentTitle: "Invoice Details",
-    onAfterPrint: () => toast.success("Print successful!"),
-  });
-
   return (
     <>
       <ToastContainer theme="light" position="bottom-right" />
 
       {/* Full-Screen Loader */}
-      {isLoading && (
+
+      {isSubmitting && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="text-center">
+            <h2 className="text-white text-2xl font-bold">
+              Saving and redirecting to print page...
+            </h2>
+            <TailSpin
+              height="8"
+              width="8"
+              color="white"
+              wrapperClass="justify-center"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* {isLoading && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <TailSpin height="80" width="80" color="white" />
         </div>
-      )}
+      )} */}
 
       <div
         className={`p-6 bg-white shadow-md rounded-lg ${
@@ -208,24 +246,36 @@ const InvoiceTable: React.FC = () => {
         </div>
 
         <div className="mt-4 flex gap-4 print:hidden">
-          <Button onClick={handleReset} variant="destructive">
-            Reset
+          {/* Reset Button with Refresh Icon */}
+          <Button
+            onClick={handleReset}
+            variant="destructive"
+            className="flex items-center space-x-2 px-4 py-2 rounded-md"
+          >
+            <RefreshCcw size={20} className="text-white" />
+            <span>Reset</span>
           </Button>
+
+          {/* Submit Button with Checkmark Icon */}
           <Button
             onClick={handleSubmit}
             disabled={isLoading}
-            className={`bg-green-700 text-white hover:text-gray-300 hover:bg-green-600 ${
+            className={`flex items-center space-x-2 bg-green-700 text-white hover:text-gray-300 hover:bg-green-600 px-4 py-2 rounded-md ${
               isLoading ? "cursor-not-allowed opacity-50" : ""
             }`}
           >
-            Submit
+            <IconDeviceFloppy size={20} className="text-white" />
+            <span>Save</span>
           </Button>
-          {/* <Button
-            onClick={handlePrint}
-            className="text-blue-500 hover:text-blue-700 print:hidden"
+
+          {/* Save and Print Button with Printer Icon */}
+          <Button
+            onClick={handlePrintResult}
+            className="flex items-center space-x-2 bg-blue-500 text-white hover:bg-blue-300 focus:ring focus:ring-blue-300 px-4 py-2 rounded-md print:hidden"
           >
-            <IconPrinter size={24} />
-          </Button> */}
+            <IconPrinter size={20} className="text-blue-100" />
+            <span>Save and Print</span>
+          </Button>
         </div>
       </div>
     </>
