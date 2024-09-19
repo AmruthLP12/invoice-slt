@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import SidebarLayout from "@/components/Layout"; // Adjust the import path as needed
 import "./globals.css";
+import GlobalSearch from "@/components/GlobalSearch";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,7 +18,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SidebarLayout>{children}</SidebarLayout>
+          <GlobalSearch />
+        <SidebarLayout>
+          {children}
+        </SidebarLayout>
       </body>
     </html>
   );
