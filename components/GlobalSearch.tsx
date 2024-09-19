@@ -4,12 +4,14 @@ import React, { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { fetchInvoices } from "@/services/service";
 import Link from "next/link";
+import { IconSearch } from "@tabler/icons-react";
 
 const GlobalSearch = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const modalRef = useRef<HTMLDivElement>(null); // Create a ref for the modal
+  const inputRef = useRef<HTMLInputElement>(null); // Create a ref for the input
 
   // Open modal on Ctrl+K
   useEffect(() => {
@@ -25,6 +27,13 @@ const GlobalSearch = () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+
+  // Automatically focus on the input field when the modal opens
+  useEffect(() => {
+    if (searchOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [searchOpen]);
 
   // Fetch invoices on load
   useEffect(() => {
@@ -67,6 +76,18 @@ const GlobalSearch = () => {
 
   return (
     <>
+      {/* Custom search card in top-right corner */}
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+        <div
+          onClick={() => setSearchOpen(true)}
+          className="flex items-center p-2 mr-10 bg-white border border-gray-300 rounded-full shadow-md cursor-pointer hover:bg-gray-100"
+        >
+          <IconSearch className="w-5 h-5 text-gray-600" />
+          <span className="ml-2 text-gray-600">Ctrl &#43; K</span>
+        </div>
+      </div>
+
+
       {/* Background Overlay */}
       {searchOpen && (
         <div className="fixed inset-0 z-40 bg-black bg-opacity-50 backdrop-blur-sm" />
@@ -81,7 +102,7 @@ const GlobalSearch = () => {
           >
             {/* Close Button */}
             <button
-              className="absolute top-0 right-1 text-gray-500 hover:text-gray-700 text-2xl"
+              className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 text-gray-600 hover:text-gray-900 text-2xl font-bold transition-all"
               onClick={() => setSearchOpen(false)}
             >
               &times;
@@ -89,6 +110,7 @@ const GlobalSearch = () => {
 
             {/* Input for search */}
             <Input
+              ref={inputRef} // Attach the input ref to the input element
               type="text"
               placeholder="Search by Card or Phone Number"
               value={searchQuery}
@@ -102,11 +124,15 @@ const GlobalSearch = () => {
                 {filteredInvoices.map((invoice) => (
                   <li key={invoice._id} className="p-2 border-b">
                     Card:
-                    <Link onClick={() => setSearchOpen(false)} href={`/invoices/${invoice.cardNumber}`}>
-                     {invoice.cardNumber}
-                     </Link>
-                     , Phone: {invoice.phoneNumber}
-                     
+                    <Link
+                      onClick={() => {
+                        setSearchOpen(false), setSearchQuery("");
+                      }}
+                      href={`/invoices/${invoice.cardNumber}`}
+                    >
+                      {invoice.cardNumber}
+                    </Link>
+                    , Phone: {invoice.phoneNumber}
                   </li>
                 ))}
               </ul>
