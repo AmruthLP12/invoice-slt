@@ -1,13 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { fetchInvoices } from "@/services/service";
+import Link from "next/link";
 
 const GlobalSearch = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const modalRef = useRef<HTMLDivElement>(null); // Create a ref for the modal
 
   // Open modal on Ctrl+K
   useEffect(() => {
@@ -34,6 +36,25 @@ const GlobalSearch = () => {
     loadInvoices();
   }, []);
 
+  // Close modal if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        setSearchOpen(false);
+      }
+    };
+
+    if (searchOpen) {
+      window.addEventListener("mousedown", handleClickOutside);
+    } else {
+      window.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      window.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [searchOpen]);
+
   // Filtered invoices based on search query (min 3 chars)
   const filteredInvoices =
     searchQuery.length >= 3
@@ -48,19 +69,19 @@ const GlobalSearch = () => {
     <>
       {/* Background Overlay */}
       {searchOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 backdrop-blur-sm"
-          onClick={() => setSearchOpen(false)} // Close when clicking outside
-        />
+        <div className="fixed inset-0 z-40 bg-black bg-opacity-50 backdrop-blur-sm" />
       )}
 
       {/* Modal Content */}
       {searchOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="w-[90%] max-w-lg p-6 bg-white rounded-lg shadow-lg relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center gap-2">
+          <div
+            ref={modalRef} // Attach the ref to the modal content
+            className="w-[90%] max-w-lg p-6 bg-white rounded-lg shadow-lg relative"
+          >
             {/* Close Button */}
             <button
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+              className="absolute top-0 right-1 text-gray-500 hover:text-gray-700 text-2xl"
               onClick={() => setSearchOpen(false)}
             >
               &times;
@@ -80,7 +101,12 @@ const GlobalSearch = () => {
               <ul>
                 {filteredInvoices.map((invoice) => (
                   <li key={invoice._id} className="p-2 border-b">
-                    Card: {invoice.cardNumber}, Phone: {invoice.phoneNumber}
+                    Card:
+                    <Link onClick={() => setSearchOpen(false)} href={`/invoices/${invoice.cardNumber}`}>
+                     {invoice.cardNumber}
+                     </Link>
+                     , Phone: {invoice.phoneNumber}
+                     
                   </li>
                 ))}
               </ul>
