@@ -5,8 +5,11 @@ import { Input } from "@/components/ui/input";
 import { fetchInvoices } from "@/services/service";
 import Link from "next/link";
 import { IconSearch } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 
 const GlobalSearch = () => {
+  const route = useRouter();
+
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -15,23 +18,65 @@ const GlobalSearch = () => {
 
   useEffect(() => {
     const handleHomeKey = (e: KeyboardEvent) => {
-        if (e.ctrlKey && e.key === "H") {
-            e.preventDefault()
+      if (e.ctrlKey && (e.key === "h" || e.key === "H")) {
+        e.preventDefault();
+        route.push("/");
+      }
+    };
 
-        }
-    }
-
-    window.addEventListener('keydown',handleHomeKey);
+    window.addEventListener("keydown", handleHomeKey);
     return () => {
-        window.removeEventListener('keydown',handleHomeKey)
-    }
-    
-  })
+      window.removeEventListener("keydown", handleHomeKey);
+    };
+  });
 
-  // Open modal on Ctrl+K
+
+  useEffect(() => {
+    const handleHomeKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey && (e.key === "i" || e.key === "I")) {
+        e.preventDefault();
+        route.push("/invoices");
+      }
+    };
+
+    window.addEventListener("keydown", handleHomeKey);
+    return () => {
+      window.removeEventListener("keydown", handleHomeKey);
+    };
+  });
+
+  useEffect(() => {
+    const handleHomeKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey && (e.key === "d" || e.key === "D")) {
+        e.preventDefault();
+        route.push("/delivered");
+      }
+    };
+
+    window.addEventListener("keydown", handleHomeKey);
+    return () => {
+      window.removeEventListener("keydown", handleHomeKey);
+    };
+  });
+
+  useEffect(() => {
+    const handleHomeKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey && (e.key === "g" || e.key === "G")) {
+        e.preventDefault();
+        route.push("/dashboard");
+      }
+    };
+
+    window.addEventListener("keydown", handleHomeKey);
+    return () => {
+      window.removeEventListener("keydown", handleHomeKey);
+    };
+  });
+
+  
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key === "k") {
+      if (e.ctrlKey && (e.key === "k" || e.key === "K")) {
         e.preventDefault();
         setSearchOpen(true);
       }
@@ -101,7 +146,6 @@ const GlobalSearch = () => {
           <span className="ml-2 text-gray-600">Ctrl &#43; K</span>
         </div>
       </div>
-
 
       {/* Background Overlay */}
       {searchOpen && (
