@@ -13,6 +13,21 @@ const GlobalSearch = () => {
   const modalRef = useRef<HTMLDivElement>(null); // Create a ref for the modal
   const inputRef = useRef<HTMLInputElement>(null); // Create a ref for the input
 
+  useEffect(() => {
+    const handleHomeKey = (e: KeyboardEvent) => {
+        if (e.ctrlKey && e.key === "H") {
+            e.preventDefault()
+
+        }
+    }
+
+    window.addEventListener('keydown',handleHomeKey);
+    return () => {
+        window.removeEventListener('keydown',handleHomeKey)
+    }
+    
+  })
+
   // Open modal on Ctrl+K
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
