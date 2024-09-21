@@ -6,94 +6,15 @@ import { fetchInvoices } from "@/services/service";
 import Link from "next/link";
 import { IconSearch } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
+import HotKeys from "./HotKeys";
 
 const GlobalSearch = () => {
   const route = useRouter();
-
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const modalRef = useRef<HTMLDivElement>(null); // Create a ref for the modal
   const inputRef = useRef<HTMLInputElement>(null); // Create a ref for the input
-
-  useEffect(() => {
-    const handleHomeKey = (e: KeyboardEvent) => {
-      if (e.ctrlKey && (e.key === "h" || e.key === "H")) {
-        e.preventDefault();
-        route.push("/");
-      }
-    };
-
-    window.addEventListener("keydown", handleHomeKey);
-    return () => {
-      window.removeEventListener("keydown", handleHomeKey);
-    };
-  });
-
-
-  useEffect(() => {
-    const handleHomeKey = (e: KeyboardEvent) => {
-      if (e.ctrlKey && (e.key === "i" || e.key === "I")) {
-        e.preventDefault();
-        route.push("/invoices");
-      }
-    };
-
-    window.addEventListener("keydown", handleHomeKey);
-    return () => {
-      window.removeEventListener("keydown", handleHomeKey);
-    };
-  });
-
-  useEffect(() => {
-    const handleHomeKey = (e: KeyboardEvent) => {
-      if (e.ctrlKey && (e.key === "d" || e.key === "D")) {
-        e.preventDefault();
-        route.push("/delivered");
-      }
-    };
-
-    window.addEventListener("keydown", handleHomeKey);
-    return () => {
-      window.removeEventListener("keydown", handleHomeKey);
-    };
-  });
-
-  useEffect(() => {
-    const handleHomeKey = (e: KeyboardEvent) => {
-      if (e.ctrlKey && (e.key === "g" || e.key === "G")) {
-        e.preventDefault();
-        route.push("/dashboard");
-      }
-    };
-
-    window.addEventListener("keydown", handleHomeKey);
-    return () => {
-      window.removeEventListener("keydown", handleHomeKey);
-    };
-  });
-
-  
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && (e.key === "k" || e.key === "K")) {
-        e.preventDefault();
-        setSearchOpen(true);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
-
-  // Automatically focus on the input field when the modal opens
-  useEffect(() => {
-    if (searchOpen && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [searchOpen]);
 
   // Fetch invoices on load
   useEffect(() => {
@@ -104,6 +25,39 @@ const GlobalSearch = () => {
 
     loadInvoices();
   }, []);
+
+  // Shortcuts
+  const shortcuts = [
+    {
+      keys: ["ctrl", "k"],
+      callback: () => {setSearchOpen(true),
+      console.log("k")}
+    },
+    {
+      keys: ["esc"],
+      callback: () => {
+        setSearchOpen(false);
+        setSearchQuery(""); // Optional: clear the search query when closing
+        console.log("esc")
+      },
+    },
+    {
+      keys: ["ctrl", "h"],
+      callback: () => route.push("/"),
+    },
+    {
+      keys: ["ctrl", "i"],
+      callback: () => route.push("/invoices"),
+    },
+    {
+      keys: ["ctrl", "d"],
+      callback: () => route.push("/delivered"),
+    },
+    {
+      keys: ["ctrl", "g"],
+      callback: () => route.push("/dashboard"),
+    },
+  ];
 
   // Close modal if clicked outside
   useEffect(() => {
@@ -136,6 +90,7 @@ const GlobalSearch = () => {
 
   return (
     <>
+      <HotKeys shortcuts={shortcuts} />
       {/* Custom search card in top-right corner */}
       <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
         <div
@@ -185,7 +140,8 @@ const GlobalSearch = () => {
                     Card:
                     <Link
                       onClick={() => {
-                        setSearchOpen(false), setSearchQuery("");
+                        setSearchOpen(false);
+                        setSearchQuery("");
                       }}
                       href={`/invoices/${invoice.cardNumber}`}
                     >
