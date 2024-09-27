@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { loginUser } from "@/services/service";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -18,30 +19,22 @@ export default function LoginPage() {
       return;
     }
 
-    try {
-      const response = await axios.post("/api/auth/login", {
-        username,
-        password,
-      });
-      alert(response.data.message);
-      router.push("/home");
-    } catch (error) {
-      // Ensure we handle AxiosError correctly
-      if (axios.isAxiosError(error)) {
-        const serverMessage = error.response?.data?.message;
-        setErrorMessage(
-          serverMessage || "Login failed. Please try again later."
-        );
-      } else {
-        setErrorMessage("An unexpected error occurred.");
-      }
+    const { data, error } = await loginUser(username, password); // Use the service function
+
+    if (error) {
+      setErrorMessage(error);
+      return;
     }
+
+    alert(data?.message);
+    router.push("/home");
   };
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-6 rounded-lg shadow-md w-80">
-        <h1 className="text-2xl font-bold text-center mb-4">Register</h1>
+        <h1 className="text-2xl font-bold text-center mb-4">Login</h1>
         <Input
           type="text"
           value={username}

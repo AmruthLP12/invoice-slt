@@ -1,41 +1,41 @@
-'use client';
-import { useState } from 'react';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+"use client";
+import { useState } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { registerUser } from "@/services/service";
 
 export default function RegisterPage() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
 
   const handleRegister = async () => {
     setErrorMessage(''); // Clear previous errors
+
     if (!username || !password) {
       setErrorMessage('Username and password are required');
       return;
     }
 
-    try {
-      const response = await axios.post('/api/auth/register', { username, password });
-      alert(response.data.message);
-      router.push('/login');
-    } catch (error: any) {
-      if (error.response && error.response.data && error.response.data.message) {
-        setErrorMessage(error.response.data.message);
-      } else {
-        setErrorMessage('Registration failed. Please try again later.');
-      }
+    const { data, error } = await registerUser(username, password); // Use the service function
+
+    if (error) {
+      setErrorMessage(error);
+      return;
     }
+
+    alert(data?.message);
+    router.push('/login');
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-6 rounded-lg shadow-md w-80">
         <h1 className="text-2xl font-bold text-center mb-4">Register</h1>
-        
+
         <input
           type="text"
           value={username}
@@ -56,8 +56,10 @@ export default function RegisterPage() {
         >
           Register
         </Button>
-        
-        {errorMessage && <p className="text-red-500 mt-4 text-center">{errorMessage}</p>}
+
+        {errorMessage && (
+          <p className="text-red-500 mt-4 text-center">{errorMessage}</p>
+        )}
       </div>
     </div>
   );

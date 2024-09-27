@@ -136,3 +136,54 @@ export const submitInvoice = async (invoice: CreateInvoice) => {
     throw error;
   }
 };
+
+export const registerUser = async (username: string, password: string) => {
+  try {
+    const response = await axios.post('/api/auth/register', { username, password });
+    return { data: response.data, error: null };
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      return { data: null, error: error.response.data.message };
+    }
+    return { data: null, error: 'Registration failed. Please try again later.' };
+  }
+};
+
+export const loginUser = async (username: string, password: string) => {
+  try {
+    const response = await axios.post('/api/auth/login', { username, password });
+    return { data: response.data, error: null };
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const serverMessage = error.response?.data?.message;
+      return { data: null, error: serverMessage || 'Login failed. Please try again later.' };
+    }
+    return { data: null, error: 'An unexpected error occurred.' };
+  }
+};
+
+
+export const fetchUser = async () => {
+  try {
+    const response = await axios.get('/api/auth/user');
+    return { data: response.data, error: null };
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return { data: null, error: 'User is not authenticated' };
+    }
+    return { data: null, error: 'An unexpected error occurred.' };
+  }
+};
+
+export const logoutUser = async () => {
+  try {
+    await axios.post('/api/auth/logout'); // Make sure you have this API endpoint
+    return { success: true, error: null };
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const serverMessage = error.response?.data?.message;
+      return { success: false, error: serverMessage || 'Logout failed. Please try again later.' };
+    }
+    return { success: false, error: 'An unexpected error occurred.' };
+  }
+};
