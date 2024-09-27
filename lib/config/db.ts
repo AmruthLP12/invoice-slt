@@ -15,7 +15,11 @@ export const connectDb = async (): Promise<void> => {
     } as ConnectOptions);
 
     isConnected = db.connections[0].readyState === 1; // 1 means connected
-    console.log("DB Connected");
+    if (isConnected) {
+      console.log("DB Connected");
+    } else {
+      console.error("Failed to connect to the database");
+    }
   } catch (error) {
     console.error("DB Connection Error:", error);
     throw new Error("Failed to connect to the database");

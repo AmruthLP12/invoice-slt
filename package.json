@@ -16,11 +16,13 @@
     "@tabler/icons-react": "^3.14.0",
     "axios": "^1.7.5",
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "chart.js": "^2.9.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "framer-motion": "^11.3.31",
+    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.436.0",
     "mongoose": "^8.6.0",
     "next": "14.2.7",
@@ -34,7 +36,9 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/chart.js": "^2.9.41",
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
