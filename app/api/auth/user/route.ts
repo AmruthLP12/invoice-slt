@@ -8,8 +8,6 @@ export async function GET(req: Request) {
   const cookie = req.headers.get('cookie');
   const token = cookie?.split('token=')[1]?.split(';')[0];
 
-  console.log("Token:", token);
-
   if (!token) {
     return NextResponse.json({ message: 'No token found' }, { status: 401 });
   }
