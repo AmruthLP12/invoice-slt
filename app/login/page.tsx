@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { loginUser } from "@/services/service";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 

@@ -1,8 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { fetchUser } from "@/services/service";
 import LogoutButton from "@/components/LogoutButton";
+import { fetchUser } from "@/services/service";
+import { useEffect, useState } from "react";
 
 export default function HomePage() {
   const [username, setUsername] = useState("");
@@ -30,7 +29,9 @@ export default function HomePage() {
       ) : (
         <h1>
           Welcome, {username} (User ID: {userId})
-          <LogoutButton />
+          <p className="max-w-[50%] ">
+            <LogoutButton />
+          </p>
         </h1>
       )}
     </div>
