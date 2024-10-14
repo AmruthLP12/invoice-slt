@@ -60,8 +60,10 @@ export const fetchDeliveredInvoices = async (): Promise<Invoice[]> => {
     // Filter to only return invoices with isDelivered: true and sort by deliveredAt (descending)
     const deliveredInvoices = invoices
       .filter((invoice: Invoice) => invoice.isDelivered && invoice.deliveredAt) // Ensure deliveredAt exists
-      .sort((a: Invoice, b: Invoice) => 
-        new Date(b.deliveredAt!).getTime() - new Date(a.deliveredAt!).getTime()
+      .sort(
+        (a: Invoice, b: Invoice) =>
+          new Date(b.deliveredAt!).getTime() -
+          new Date(a.deliveredAt!).getTime()
       ); // Sort by deliveredAt in reverse order
 
     return deliveredInvoices;
@@ -139,51 +141,94 @@ export const submitInvoice = async (invoice: CreateInvoice) => {
 
 export const registerUser = async (username: string, password: string) => {
   try {
-    const response = await axios.post('/api/auth/register', { username, password });
+    const response = await axios.post("/api/auth/register", {
+      username,
+      password,
+    });
     return { data: response.data, error: null };
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       return { data: null, error: error.response.data.message };
     }
-    return { data: null, error: 'Registration failed. Please try again later.' };
+    return {
+      data: null,
+      error: "Registration failed. Please try again later.",
+    };
   }
 };
 
 export const loginUser = async (username: string, password: string) => {
   try {
-    const response = await axios.post('/api/auth/login', { username, password });
+    const response = await axios.post("/api/auth/login", {
+      username,
+      password,
+    });
     return { data: response.data, error: null };
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const serverMessage = error.response?.data?.message;
-      return { data: null, error: serverMessage || 'Login failed. Please try again later.' };
+      return {
+        data: null,
+        error: serverMessage || "Login failed. Please try again later.",
+      };
     }
-    return { data: null, error: 'An unexpected error occurred.' };
+    return { data: null, error: "An unexpected error occurred." };
   }
 };
 
-
 export const fetchUser = async () => {
   try {
-    const response = await axios.get('/api/auth/user');
+    const response = await axios.get("/api/auth/user");
     return { data: response.data, error: null };
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      return { data: null, error: 'User is not authenticated' };
+      return { data: null, error: "User is not authenticated" };
     }
-    return { data: null, error: 'An unexpected error occurred.' };
+    return { data: null, error: "An unexpected error occurred." };
   }
 };
 
 export const logoutUser = async () => {
   try {
-    await axios.post('/api/auth/logout'); // Make sure you have this API endpoint
+    await axios.post("/api/auth/logout"); // Make sure you have this API endpoint
     return { success: true, error: null };
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const serverMessage = error.response?.data?.message;
-      return { success: false, error: serverMessage || 'Logout failed. Please try again later.' };
+      return {
+        success: false,
+        error: serverMessage || "Logout failed. Please try again later.",
+      };
     }
-    return { success: false, error: 'An unexpected error occurred.' };
+    return { success: false, error: "An unexpected error occurred." };
   }
 };
+
+// Fetch the last card number
+export const fetchNextCardNumber = async (): Promise<string | null> => {
+  try {
+    const response = await axios.get("/api"); // Fetch all invoices
+    const invoices = response.data;
+
+    if (invoices.length === 0) {
+      return "1"; // If no invoices exist, start with card number "1"
+    }
+
+    const lastInvoice = invoices[invoices.length - 1]; // Get the last invoice
+    const lastCardNumber = parseInt(lastInvoice.cardNumber, 10); // Parse card number to integer
+
+    if (isNaN(lastCardNumber)) {
+      throw new Error("Invalid card number format."); // Handle if the card number is not a number
+    }
+
+    const nextCardNumber = lastCardNumber + 1; // Increment the last card number
+
+    console.log("Next Card Number:", nextCardNumber); // Log for debugging purposes
+
+    return nextCardNumber.toString(); // Return the next card number as a string
+  } catch (error) {
+    toast.error("Failed to fetch the next card number.");
+    throw error;
+  }
+};
+

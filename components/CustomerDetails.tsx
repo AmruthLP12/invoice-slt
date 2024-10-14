@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
+import { fetchNextCardNumber } from "@/services/service";
 
 interface CustomerDetailsProps {
   cardNumber: string;
@@ -25,6 +26,23 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
 }) => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
+
+  const [lastCardNumber, setLastCardNumber] = useState<string | null>(null);
+
+  // Fetch the last card number when the component mounts
+  useEffect(() => {
+    const getLastCardNumber = async () => {
+      try {
+        const lastNumber = await fetchNextCardNumber();
+        setLastCardNumber(lastNumber);
+        console.log("lastNumber",lastNumber)
+      } catch (error) {
+        console.error("Failed to fetch the last card number:", error);
+      }
+    };
+
+    getLastCardNumber();
+  }, []);
 
   useEffect(() => {
     const fetchSuggestions = async () => {
@@ -60,6 +78,7 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
           }}
           className="w-full p-2 border border-gray-300 rounded"
           required
+          placeholder={lastCardNumber || "Enter card number"}
         />
         {!isCardNumberValid && (
           <p className="text-red-500 text-sm">Please Enter the card number.</p>
