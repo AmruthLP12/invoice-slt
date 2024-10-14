@@ -7,74 +7,50 @@ import { useEffect, useRef, useState } from "react";
 import { TailSpin } from "react-loader-spinner";
 import { labels } from "@/data";
 
-const ChartLine = () => {
+const AmountChart = () => {
   const chartRef = useRef<HTMLCanvasElement | null>(null);
-  const [chartData, setChartData] = useState<ChartConfiguration["data"] | null>(
-    null
-  );
+  const [chartData, setChartData] = useState<ChartConfiguration["data"] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentWeek, setCurrentWeek] = useState<Date>(startOfWeek(new Date()));
   const [weekRange, setWeekRange] = useState<string>("");
-  const [totalReceived, setTotalReceived] = useState<number>(0);
   const [totalDelivered, setTotalDelivered] = useState<number>(0);
+  const [totalDeliveredInvoices, setTotalDeliveredInvoices] = useState<number>(0);
 
   const fetchAndSetInvoices = async (weekStart: Date) => {
     try {
       const invoices = await fetchInvoices();
 
-      // Process invoices to get the data for the chart
-      // const labels = [
-      //   "Sunday",
-      //   "Monday",
-      //   "Tuesday",
-      //   "Wednesday",
-      //   "Thursday",
-      //   "Friday",
-      //   "Saturday",
-      // ];
-      const receivedIn = new Array(7).fill(0);
-      const delivered = new Array(7).fill(0);
-      let receivedCount = 0;
-      let deliveredCount = 0;
+      // Initialize array for delivered amounts
+      const deliveredAmount = new Array(7).fill(0);
+      let deliveredTotal = 0;
+      let deliveredInvoiceCount = 0;
 
       invoices.forEach((invoice) => {
-        const invoiceDate = new Date(invoice.today);
-        if (invoiceDate >= weekStart && invoiceDate <= endOfWeek(weekStart)) {
-          const day = invoiceDate.getDay();
-          receivedIn[day]++;
-          receivedCount++;
-        }
-
-        // Check if deliveredAt is available and within the current week range
+        // Only process if the invoice is marked as delivered and has a delivery date
         if (invoice.isDelivered && invoice.deliveredAt) {
           const deliveredDate = new Date(invoice.deliveredAt);
-          if (
-            deliveredDate >= weekStart &&
-            deliveredDate <= endOfWeek(weekStart)
-          ) {
+          const grandTotal = invoice.rows.reduce((acc, row) => acc + row.total, 0);
+
+          // Only count invoices delivered within the current week
+          if (deliveredDate >= weekStart && deliveredDate <= endOfWeek(weekStart)) {
             const day = deliveredDate.getDay();
-            delivered[day]++;
-            deliveredCount++;
+            deliveredAmount[day] += grandTotal;
+            deliveredTotal += grandTotal;
+            deliveredInvoiceCount += 1; 
           }
         }
       });
 
-      setTotalReceived(receivedCount);
-      setTotalDelivered(deliveredCount);
+      setTotalDelivered(deliveredTotal);
+      setTotalDeliveredInvoices(deliveredInvoiceCount);
 
+      // Set chart data with total delivered amount in label
       setChartData({
         labels,
         datasets: [
           {
-            data: receivedIn,
-            label: "Received",
-            borderColor: "#3e95cd",
-            backgroundColor: "#7bb6dd",
-            fill: false,
-          },
-          {
-            data: delivered,
-            label: "Delivered",
+            data: deliveredAmount,
+            label: `Amount (Total Delivered: ${deliveredTotal})`, // Display total delivered in label
             borderColor: "#3cba9f",
             backgroundColor: "#71d1bd",
             fill: false,
@@ -89,7 +65,7 @@ const ChartLine = () => {
     } catch (error) {
       console.error("Error fetching or processing invoices:", error);
     } finally {
-      setLoading(false); // Set loading to false once data is fetched
+      setLoading(false);
     }
   };
 
@@ -128,7 +104,7 @@ const ChartLine = () => {
   return (
     <>
       {/* line chart */}
-      <h1 className="text-xl font-semibold text-center mt-6">Weekly Report</h1>
+      <h1 className="text-xl font-semibold text-center mt-6">Weekly Delivered Amount Report</h1>
       <div className="flex flex-col items-center px-4 py-6">
         <div className="flex space-x-4 mb-4">
           <button
@@ -151,10 +127,10 @@ const ChartLine = () => {
         </div>
         <div className="flex flex-row items-center gap-16">
           <div className="text-lg font-medium mb-4">{`Week of ${weekRange}`}</div>
-          {/* Display total counts below the chart */}
+          {/* Display total delivered amount below the chart */}
           <div className="mt-4 text-center">
-            <p className="text-lg font-semibold">{`Total Received: ${totalReceived}`}</p>
-            <p className="text-lg font-semibold">{`Total Delivered: ${totalDelivered}`}</p>
+            <p className="text-lg font-semibold">{`Total Delivered Amount: ${totalDelivered}`}</p>
+            <p className="text-lg font-semibold">{`Total Delivered Invoices: ${totalDeliveredInvoices}`}</p>
           </div>
         </div>
         <div className="w-full max-w-full md:max-w-[800px] lg:max-w-[1000px] h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] border border-gray-300 pt-4 rounded-xl shadow-lg relative">
@@ -169,6 +145,6 @@ const ChartLine = () => {
       </div>
     </>
   );
-}
+};
 
-export default ChartLine;
+export default AmountChart;
