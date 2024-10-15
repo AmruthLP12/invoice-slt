@@ -15,6 +15,8 @@ export async function GET(request: NextRequest) {
   const cardNumber = request.nextUrl.searchParams.get("cardNumber");
   const phoneNumber = request.nextUrl.searchParams.get("phoneNumber");
 
+
+  
   if (cardNumber) {
     try {
       const invoice = await InvoiceModel.findOne({ cardNumber });

@@ -26,8 +26,29 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
 }) => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
-
   const [lastCardNumber, setLastCardNumber] = useState<string | null>(null);
+  const [rawPhoneNumber, setRawPhoneNumber] = useState<string>(''); // Raw phone number without formatting
+
+  // Format phone number with spaces after every 5 digits
+  const formatPhoneNumber = (value: string) => {
+    // Remove all non-digit characters (like spaces) first
+    const rawValue = value.replace(/\D/g, '');
+
+    // Group digits in chunks of 5 (for Indian phone numbers)
+    return rawValue.replace(/(\d{5})(\d+)/, '$1 $2');
+  };
+
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value;
+
+    // Remove any spaces or non-digit characters for raw phone number
+    const rawValue = input.replace(/\D/g, '');
+    setRawPhoneNumber(rawValue); // Store the raw number for API requests
+
+    // Format the input value with spaces
+    const formattedNumber = formatPhoneNumber(input);
+    setPhoneNumber(formattedNumber); // Store the formatted number for display
+  };
 
   // Fetch the last card number when the component mounts
   useEffect(() => {
@@ -35,7 +56,7 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
       try {
         const lastNumber = await fetchNextCardNumber();
         setLastCardNumber(lastNumber);
-        console.log("lastNumber",lastNumber)
+        console.log("lastNumber", lastNumber);
       } catch (error) {
         console.error("Failed to fetch the last card number:", error);
       }
@@ -46,9 +67,9 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
 
   useEffect(() => {
     const fetchSuggestions = async () => {
-      if (phoneNumber) {
+      if (rawPhoneNumber) { // Use the raw phone number for the API request
         try {
-          const response = await axios.get(`/api/?phoneNumber=${phoneNumber}`);
+          const response = await axios.get(`/api/?phoneNumber=${rawPhoneNumber}`);
           setSuggestions(response.data);
           setShowSuggestions(true);
         } catch (error) {
@@ -61,7 +82,7 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
     };
 
     fetchSuggestions();
-  }, [phoneNumber]);
+  }, [rawPhoneNumber]); // Trigger the API call when the raw phone number changes
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
@@ -71,7 +92,7 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
         </label>
         <Input
           type="number"
-          value={cardNumber}
+          value={cardNumber || lastCardNumber || ''}
           onChange={(e) => {
             setCardNumber(e.target.value);
             setIsCardNumberValid(true); // Reset validation when user types
@@ -96,9 +117,9 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
       <div className="relative">
         <label className="block mb-1">Phone Number:</label>
         <Input
-          type="number"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
+          type="text" // Keep type as text to handle spaces
+          value={phoneNumber} // Display the formatted phone number
+          onChange={handlePhoneNumberChange} // Handle formatting and raw value
           className="w-full p-2 border border-gray-300 rounded"
         />
         {/* Suggestions Dropdown */}
@@ -108,7 +129,8 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
               <li
                 key={index}
                 onClick={() => {
-                  setPhoneNumber(suggestion);
+                  setRawPhoneNumber(suggestion); // Set the raw value
+                  setPhoneNumber(formatPhoneNumber(suggestion)); // Set the formatted value
                   setShowSuggestions(false);
                 }}
                 className="p-2 hover:bg-gray-100 cursor-pointer"
@@ -124,3 +146,5 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
 };
 
 export default CustomerDetails;
+
+

@@ -119,7 +119,7 @@ export const fetchInvoiceDetails = async (
   }
 };
 
-// create an invoice
+
 
 // Submit Invoice
 export const submitInvoice = async (invoice: CreateInvoice) => {
@@ -231,4 +231,37 @@ export const fetchNextCardNumber = async (): Promise<string | null> => {
     throw error;
   }
 };
+
+// invoiceService.js
+
+
+export const checkCardNumberExists = async (cardNumber: string) => {
+  try {
+    const response = await axios.get(`/api`, {
+      params: {
+        cardNumber,
+      },
+    });
+
+    if (response.status === 200) {
+      // Return the invoice data if found (cardNumber exists)
+      return response.data;
+    }
+
+    return null; // If no invoice is found
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      // Handle 404 as "card number does not exist"
+      if (error.response && error.response.status === 404) {
+        return null; // Card number doesn't exist, so it's fine to continue
+      }
+      console.error("Axios error checking card number:", error.message);
+    } else {
+      // Handle any other types of errors (non-Axios)
+      console.error("Unexpected error checking card number:", error);
+    }
+    throw new Error("Failed to check card number");
+  }
+};
+
 

@@ -4,7 +4,11 @@ import { InvoiceRow } from "@/components/types"; // Import InvoiceRow type
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { fixedRows, tableHeaders } from "@/data";
-import { submitInvoice } from "@/services/service";
+import {
+  checkCardNumberExists,
+  fetchNextCardNumber,
+  submitInvoice,
+} from "@/services/service";
 import { IconDeviceFloppy, IconPrinter } from "@tabler/icons-react";
 import { RefreshCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -79,53 +83,67 @@ const InvoiceTable: React.FC = () => {
 
   const handleSubmit = async () => {
     let isValid = true;
-
+  
+    const trimmedPhoneNumber = phoneNumber.split(" ").join("");
+  
     if (!cardNumber || !selectedDate) {
       isValid = false;
       toast.error("Please fill out all required fields");
     }
-
+  
     if (!cardNumber) {
       isValid = false;
-      setIsCardNumberValid(false); // Set validation to false if card number is empty
+      setIsCardNumberValid(false);
     }
-
+  
     if (!selectedDate) {
       isValid = false;
-      setIsDateValid(false); // Set validation to false if no date is selected
+      setIsDateValid(false);
     }
-
+  
     if (!isValid) {
-      return; // Prevent submission if any validation fails
+      return;
     }
-
-    setIsCardNumberValid(true); // Reset validation state
-    setIsDateValid(true); // Reset validation state
-
-    setIsLoading(true); // Set loading state to true
-
-    const invoice = {
-      customerName,
-      phoneNumber,
-      cardNumber,
-      selectedDate,
-      advance,
-      rows,
-      today, // Use the updated today date
-    };
-
+  
+    setIsCardNumberValid(true);
+    setIsDateValid(true);
+  
+    setIsLoading(true);
+  
     try {
+      const existingInvoice = await checkCardNumberExists(cardNumber);
+  
+      if (existingInvoice) {
+        toast.error("Card number already exists. Please use a different card number.");
+        return;
+      }
+  
+      const invoice = {
+        customerName,
+        phoneNumber: trimmedPhoneNumber,
+        cardNumber,
+        selectedDate,
+        advance,
+        rows,
+        today,
+      };
+  
       const success = await submitInvoice(invoice);
       if (success) {
-        handleReset(); // Reset form after successful submission
-        return cardNumber; // Return the cardNumber for further use
+        handleReset();
+        const nextCardNumber = await fetchNextCardNumber();
+        setCardNumber(nextCardNumber ?? "");
+  
+        return cardNumber;
       }
     } catch (error) {
-      // Handle the error if needed
+      console.error("Error submitting invoice:", error);
+      toast.error("Error occurred during submission.");
     } finally {
-      setIsLoading(false); // Set loading state to false after submission completes
+      setIsLoading(false);
     }
   };
+  
 
   const handlePrintResult = async () => {
     try {
